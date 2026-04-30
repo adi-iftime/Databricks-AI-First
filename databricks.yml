@@ -20,9 +20,6 @@ variables:
   bronze_source_path:
     description: Unity Catalog volume or cloud path where raw JSON files land for Auto Loader
     default: /Volumes/main/default/bronze_ingest/sample
-  pipeline_spark_version:
-    description: DBR version for the DLT pipeline cluster (classic compute; serverless DLT is not enabled in all workspaces)
-    default: 15.4.x-scala2.12
   pipeline_node_type_id:
     description: Worker node type for the DLT pipeline (must exist in your workspace region)
     default: Standard_DS3_v2
@@ -33,9 +30,9 @@ resources:
       name: medallion_dlt
       catalog: ${var.catalog}
       development: false
+      # PipelineCluster does not support spark_version (runtime comes from the pipeline product defaults).
       clusters:
         - label: default
-          spark_version: ${var.pipeline_spark_version}
           node_type_id: ${var.pipeline_node_type_id}
           num_workers: 1
       configuration:
