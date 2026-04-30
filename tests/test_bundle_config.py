@@ -18,7 +18,10 @@ def test_databricks_yml_structure():
     assert "${" not in host, "workspace.host must not use bundle interpolation"
     assert cfg["workspace"]["root_path"] == "/Shared/.bundle/databricks_ai_first"
     pipes = cfg["resources"]["pipelines"]["medallion_dlt"]
-    assert pipes["serverless"] is True
+    assert pipes.get("serverless") is not True, "use classic clusters unless workspace enables serverless DLT"
+    clusters = pipes.get("clusters") or []
+    assert clusters, "pipeline must define clusters when serverless DLT is unavailable"
+    assert any(c.get("label") == "default" for c in clusters)
     libs = pipes["libraries"]
     assert any(
         "medallion_dlt.py" in str(lib.get("file", {}).get("path", "")) for lib in libs
