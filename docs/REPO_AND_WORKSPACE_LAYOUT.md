@@ -5,12 +5,12 @@
 | Property | Value |
 | -------- | ----- |
 | Bundle name | `databricks_ai_first` |
-| Workspace deployment root | `/Shared/.bundle/databricks_ai_first` |
+| Workspace deployment root | `/Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}` (resolves per deploying user / PAT identity) |
 | Declarative config | [`databricks.yml`](../databricks.yml) at repository root |
 
-All bundle sync and deployment state for this project must remain under **`/Shared/.bundle/databricks_ai_first`**, not under any user’s **`/Workspace/Users/...`** path.
+Bundle files and deployment state land under the **current user’s** workspace folder (see `workspace.root_path` in [`databricks.yml`](../databricks.yml)). That avoids deploying under **`/Workspace/Shared`**, which is writable by broad workspace groups. CI deploys use whatever identity owns **`DATABRICKS_TOKEN`**, so the path resolves under that principal.
 
-**Targets `dev` and `prod`:** both use Databricks bundle **`mode: production`**. Databricks does not allow `mode: development` with a shared `root_path` under `/Shared/...` (it requires a user-scoped path such as `~/...`). The name `dev` is only the bundle target used by CI (`-t dev`); it does not mean “development mode” in the bundle sense.
+**Targets `dev` and `prod`:** both use Databricks bundle **`mode: production`**. The name `dev` is only the bundle target used by CI (`-t dev`); it does not mean “development mode” in the bundle sense.
 
 ## Repository structure
 

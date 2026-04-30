@@ -16,12 +16,15 @@ def test_databricks_yml_structure():
     host = cfg["workspace"]["host"]
     assert host.startswith("https://"), "workspace.host must be an https URL literal"
     assert "${" not in host, "workspace.host must not use bundle interpolation"
-    assert cfg["workspace"]["root_path"] == "/Shared/.bundle/databricks_ai_first"
+    rp = cfg["workspace"]["root_path"]
+    assert rp.startswith("/Workspace/Users/")
+    assert "${workspace.current_user.userName}" in rp
+    assert "${bundle.name}" in rp
+    assert "${bundle.target}" in rp
     pipes = cfg["resources"]["pipelines"]["medallion_dlt"]
-    assert pipes.get("serverless") is not True, "use classic clusters unless workspace enables serverless DLT"
+    assert pipes.get("serverless") is True, "workspace requires serverless DLT"
     clusters = pipes.get("clusters") or []
-    assert clusters, "pipeline must define clusters when serverless DLT is unavailable"
-    assert any(c.get("label") == "default" for c in clusters)
+    assert not clusters, "serverless pipeline must not use classic clusters block"
     libs = pipes["libraries"]
     assert any(
         "medallion_dlt.py" in str(lib.get("file", {}).get("path", "")) for lib in libs
