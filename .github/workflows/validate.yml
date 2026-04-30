@@ -1,0 +1,46 @@
+name: Validate Databricks bundle
+
+on:
+  pull_request:
+    branches: [main, master]
+  push:
+    branches: [main, master]
+
+concurrency:
+  group: bundle-validate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dev dependencies and run offline tests
+        run: |
+          pip install -r requirements-dev.txt
+          pytest -q
+
+      - uses: databricks/setup-cli@main
+
+      # Fork PRs cannot access repository secrets; skip remote validate (offline pytest already ran).
+      - name: databricks bundle validate (dev)
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${DATABRICKS_HOST:-}" ] || [ -z "${DATABRICKS_TOKEN:-}" ]; then
+            echo "::error::Missing workspace auth. Add repository secrets: DATABRICKS_HOST, DATABRICKS_TOKEN."
+            exit 1
+          fi
+          if grep -q 'adb-0000000000000000' databricks.yml; then
+            echo "::error::databricks.yml still contains the placeholder workspace host. Replace workspace.host with the same URL as secret DATABRICKS_HOST (literal string, no interpolation)."
+            exit 1
+          fi
+          databricks bundle validate -t dev

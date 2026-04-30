@@ -1,0 +1,38 @@
+name: Deploy Databricks bundle
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Bundle target name (dev or prod)
+        required: true
+        default: dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      BUNDLE_TARGET: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target || 'dev' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: databricks/setup-cli@main
+
+      - name: Preflight (secrets + workspace host)
+        run: |
+          set -euo pipefail
+          if [ -z "${DATABRICKS_HOST:-}" ] || [ -z "${DATABRICKS_TOKEN:-}" ]; then
+            echo "::error::Missing DATABRICKS_HOST or DATABRICKS_TOKEN secrets."
+            exit 1
+          fi
+          if grep -q 'adb-0000000000000000' databricks.yml; then
+            echo "::error::Replace placeholder workspace.host in databricks.yml before deploy."
+            exit 1
+          fi
+
+      - name: databricks bundle deploy
+        run: databricks bundle deploy -t "${BUNDLE_TARGET}" --auto-approve

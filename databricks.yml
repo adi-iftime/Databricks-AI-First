@@ -1,0 +1,50 @@
+# Replace the workspace host below with your Databricks workspace URL (literal string only — no bundle interpolation).
+bundle:
+  name: databricks_ai_first
+
+workspace:
+  host: https://adb-3696551871930054.14.azuredatabricks.net
+  root_path: /Shared/.bundle/databricks_ai_first
+
+sync:
+  exclude:
+    - .git
+    - "**/__pycache__"
+    - "**/*.pyc"
+    - tests
+    - docs
+
+variables:
+  catalog:
+    default: main
+  bronze_source_path:
+    description: Unity Catalog volume or cloud path where raw JSON files land for Auto Loader
+    default: /Volumes/main/default/bronze_ingest/sample
+
+resources:
+  pipelines:
+    medallion_dlt:
+      name: medallion_dlt
+      catalog: ${var.catalog}
+      development: false
+      serverless: true
+      configuration:
+        bundle.catalog: ${var.catalog}
+        bundle.bronze_source_path: ${var.bronze_source_path}
+        spark.databricks.delta.schema.autoMerge.enabled: "true"
+      libraries:
+        - file:
+            path: ./src/pipelines/medallion_dlt.py
+      schema: medallion_dlt
+
+# Shared bundle roots (/Shared/.bundle/...) require production mode. "dev" here is only the target name for CI/CD, not Databricks development-mode deployments.
+targets:
+  dev:
+    mode: production
+    default: true
+    variables:
+      catalog: main
+  prod:
+    mode: production
+    variables:
+      catalog: main
