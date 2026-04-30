@@ -1,17 +1,17 @@
-name: Deploy Databricks bundle
+name: Validate Databricks bundle
 
 on:
+  pull_request:
+    branches: [main, master]
   push:
     branches: [main, master]
-  workflow_dispatch:
-    inputs:
-      target:
-        description: Bundle target name (dev or prod)
-        required: true
-        default: dev
+
+concurrency:
+  group: bundle-validate-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  deploy:
+  validate:
     runs-on: ubuntu-latest
     env:
       DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
@@ -22,11 +22,19 @@ jobs:
       AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       DATABRICKS_AUTH_TYPE: azure-client-secret
-      BUNDLE_TARGET: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target || 'dev' }}
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dev dependencies and run offline tests
+        run: |
+          pip install -r requirements-dev.txt
+          pytest -q
+
       - uses: databricks/setup-cli@main
 
-      - name: databricks bundle deploy
-        run: databricks bundle deploy -t "${BUNDLE_TARGET}" --auto-approve
+      - name: databricks bundle validate (dev)
+        run: databricks bundle validate -t dev
