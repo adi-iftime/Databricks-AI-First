@@ -12,7 +12,7 @@ Production-oriented starter for **Databricks**: **Databricks Asset Bundles**, **
 
 1. Edit **`databricks.yml`**: set `workspace.host` to your real workspace URL (static literal, no interpolation).
 2. Create GitHub secrets: **`DATABRICKS_HOST`**, **`DATABRICKS_TOKEN`** (see auth doc).
-3. Ensure Unity Catalog paths exist for **`bronze_source_path`** (default under `main` catalog) or override `bronze_source_path` in the bundle.
+3. Ensure Unity Catalog paths exist for **`bronze_source_path`** (default **`/Volumes/cursorfun/default/bronze_ingest/sample`**) and create the **`bronze_ingest`** volume under catalog **`cursorfun`**, schema **`default`**, or override paths in the bundle.
 4. Seed the bronze path with JSON files (e.g. `{"event_id":"1","payload":{"x":1}}` per line or one JSON object per file depending on layout).
 5. **Unity Catalog:** the workspace must have a **Unity Catalog metastore** assigned (`No metastore assigned` during deploy means an admin must attach one in account/workspace settings). This bundle publishes to **`catalog`** + **`schema`** and uses **`/Volumes/...`** paths, which require UC.
 6. **DLT compute:** **classic** pipeline clusters (`clusters` in `databricks.yml`), not serverless DLT. Override **`pipeline_node_type_id`** if your region rejects the default SKU. DBR level for pipeline clusters is controlled by the platform, not `spark_version` on the cluster block.

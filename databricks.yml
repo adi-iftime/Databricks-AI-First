@@ -3,7 +3,7 @@ bundle:
   name: databricks_ai_first
 
 workspace:
-  host: https://adb-3696551871930054.14.azuredatabricks.net
+  host: https://adb-7405613318934241.1.azuredatabricks.net
   root_path: /Shared/.bundle/databricks_ai_first
 
 sync:
@@ -16,10 +16,11 @@ sync:
 
 variables:
   catalog:
-    default: main
+    description: Unity Catalog for pipeline tables (bronze/silver/gold publish under schema below)
+    default: cursorfun
   bronze_source_path:
     description: Unity Catalog volume or cloud path where raw JSON files land for Auto Loader
-    default: /Volumes/main/default/bronze_ingest/sample
+    default: /Volumes/cursorfun/default/bronze_ingest/sample
   pipeline_node_type_id:
     description: Worker node type for the DLT pipeline (must exist in your workspace region)
     default: Standard_DS3_v2
@@ -42,6 +43,7 @@ resources:
       libraries:
         - file:
             path: ./src/pipelines/medallion_dlt.py
+      # Pipeline tables: {catalog}.medallion_dlt.* — distinct from schema "default" used for the bronze volume path.
       schema: medallion_dlt
 
 # Shared bundle roots (/Shared/.bundle/...) require production mode. "dev" here is only the target name for CI/CD, not Databricks development-mode deployments.
@@ -50,8 +52,8 @@ targets:
     mode: production
     default: true
     variables:
-      catalog: main
+      catalog: cursorfun
   prod:
     mode: production
     variables:
-      catalog: main
+      catalog: cursorfun
