@@ -1,0 +1,62 @@
+name: Deploy Databricks Medallion Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          pip install pyyaml python-dotenv
+
+      - name: Install Databricks CLI v2
+        uses: databricks/setup-cli@main
+
+      - name: Validate Databricks authentication
+        run: |
+          set -euo pipefail
+          databricks current-user me
+
+      - name: Upload sample CSV to DBFS
+        run: |
+          set -euo pipefail
+          databricks fs mkdir dbfs:/mnt/demo/raw
+          databricks fs cp data/sample.csv dbfs:/mnt/demo/raw/sample.csv --overwrite
+
+      - name: Validate bundle
+        run: |
+          set -euo pipefail
+          databricks bundle validate -t dev
+
+      - name: Deploy bundle
+        run: |
+          set -euo pipefail
+          databricks bundle deploy -t dev
+
+      - name: Run DLT pipeline
+        run: |
+          set -euo pipefail
+          databricks bundle run medallion_sales_pipeline -t dev
+

@@ -1,0 +1,68 @@
+bundle:
+  name: databricks-medallion-dlt
+
+sync:
+  include:
+    - src/**
+    - config/**
+    - data/**
+
+variables:
+  catalog:
+    description: Unity Catalog name for publishing pipeline tables.
+    default: main
+  schema:
+    description: Target schema for Medallion tables.
+    default: dlt_demo
+  environment:
+    description: Deployment environment.
+    default: dev
+  pipeline_name:
+    description: Display name of the DLT pipeline.
+    default: medallion_sales_pipeline
+  source_csv_path:
+    description: DBFS source path for raw CSV files.
+    default: dbfs:/mnt/demo/raw/sample.csv
+  checkpoint_base_path:
+    description: DBFS checkpoint path for ingestion metadata.
+    default: dbfs:/mnt/demo/checkpoints/medallion_sales
+
+resources:
+  pipelines:
+    medallion_sales_pipeline:
+      name: ${var.pipeline_name}
+      catalog: ${var.catalog}
+      schema: ${var.schema}
+      channel: CURRENT
+      development: true
+      continuous: false
+      photon: true
+      clusters:
+        - label: default
+          autoscale:
+            min_workers: 1
+            max_workers: 2
+          spark_conf:
+            spark.databricks.delta.schema.autoMerge.enabled: "true"
+      libraries:
+        - file:
+            path: src/config_loader.py
+        - file:
+            path: src/bronze.py
+        - file:
+            path: src/silver.py
+        - file:
+            path: src/gold.py
+      configuration:
+        env: ${var.environment}
+        source_csv_path: ${var.source_csv_path}
+        checkpoint_base_path: ${var.checkpoint_base_path}
+
+targets:
+  dev:
+    default: true
+    # Development mode disables the deployment lock by default (see deployment-modes docs).
+    mode: development
+    variables:
+      environment: dev
+
