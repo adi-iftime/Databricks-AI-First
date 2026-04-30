@@ -37,9 +37,10 @@ resources:
             path: ./src/pipelines/medallion_dlt.py
       schema: medallion_dlt
 
+# Shared bundle roots (/Shared/.bundle/...) require production mode. "dev" here is only the target name for CI/CD, not Databricks development-mode deployments.
 targets:
   dev:
-    mode: development
+    mode: production
     default: true
     variables:
       catalog: main

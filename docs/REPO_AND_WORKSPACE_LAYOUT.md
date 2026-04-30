@@ -10,6 +10,8 @@
 
 All bundle sync and deployment state for this project must remain under **`/Shared/.bundle/databricks_ai_first`**, not under any user’s **`/Workspace/Users/...`** path.
 
+**Targets `dev` and `prod`:** both use Databricks bundle **`mode: production`**. Databricks does not allow `mode: development` with a shared `root_path` under `/Shared/...` (it requires a user-scoped path such as `~/...`). The name `dev` is only the bundle target used by CI (`-t dev`); it does not mean “development mode” in the bundle sense.
+
 ## Repository structure
 
 ```
