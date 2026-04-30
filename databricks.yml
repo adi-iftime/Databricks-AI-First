@@ -1,9 +1,9 @@
-# Replace the workspace host below with your Azure Databricks URL (literal string only — no bundle interpolation).
+# Replace the workspace host below with your Databricks workspace URL (literal string only — no bundle interpolation).
 bundle:
   name: databricks_ai_first
 
 workspace:
-  host: https://adb-0000000000000000.0.azuredatabricks.net
+  host: https://adb-3696551871930054.14.azuredatabricks.net
   root_path: /Shared/.bundle/databricks_ai_first
 
 sync:

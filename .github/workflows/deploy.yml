@@ -15,18 +15,24 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-      DATABRICKS_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      DATABRICKS_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-      DATABRICKS_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      DATABRICKS_AUTH_TYPE: azure-client-secret
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
       BUNDLE_TARGET: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target || 'dev' }}
     steps:
       - uses: actions/checkout@v4
 
       - uses: databricks/setup-cli@main
+
+      - name: Preflight (secrets + workspace host)
+        run: |
+          set -euo pipefail
+          if [ -z "${DATABRICKS_HOST:-}" ] || [ -z "${DATABRICKS_TOKEN:-}" ]; then
+            echo "::error::Missing DATABRICKS_HOST or DATABRICKS_TOKEN secrets."
+            exit 1
+          fi
+          if grep -q 'adb-0000000000000000' databricks.yml; then
+            echo "::error::Replace placeholder workspace.host in databricks.yml before deploy."
+            exit 1
+          fi
 
       - name: databricks bundle deploy
         run: databricks bundle deploy -t "${BUNDLE_TARGET}" --auto-approve

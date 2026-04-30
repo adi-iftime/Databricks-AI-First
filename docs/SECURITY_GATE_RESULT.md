@@ -2,24 +2,24 @@
 
 **REVIEW RESULT: CLEAR**
 
-Review scope: repository artifacts for Databricks Asset Bundles, Delta Live Tables entrypoint, and GitHub Actions workflows after implementation of AUTH-01 through CICD-02.
+Review scope: repository artifacts for Databricks Asset Bundles, Delta Live Tables entrypoint, and GitHub Actions workflows using **Personal Access Token** authentication for CI/CD.
 
 ## Checks
 
 | Control | Status |
 | ------- | ------ |
-| No Databricks PATs or `DATABRICKS_TOKEN` usage in workflows or docs | Pass |
-| CI uses Azure Entra service principal path (`DATABRICKS_AUTH_TYPE=azure-client-secret`) with secrets limited to `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_TENANT_ID`, `DATABRICKS_HOST` | Pass |
-| Workflows map required GitHub secret names to CLI variables without adding PAT-based auth | Pass |
+| CI/CD uses only **`DATABRICKS_HOST`** and **`DATABRICKS_TOKEN`** from GitHub Secrets (no alternate identity env vars in workflows) | Pass |
+| Workflows do not echo tokens; PAT supplied via `env` to CLI steps only | Pass |
 | Bundle `workspace.root_path` is under `/Shared/.bundle/...`, not `/Workspace/Users/...` | Pass |
 | `workspace.host` is a literal URL string in `databricks.yml` (replace placeholder before production) | Pass |
 | `.gitignore` excludes `.env`, `.databricks/`, `.bundle/` | Pass |
-| No client secrets committed in repository files | Pass |
+| No `DATABRICKS_TOKEN` or raw PAT material committed in repository files | Pass |
 
 ## Notes
 
-- Replace the placeholder host `https://adb-0000000000000000.0.azuredatabricks.net` before connecting to a real workspace.
-- Apply least-privilege workspace and Unity Catalog grants to the deployment service principal per environment.
-- Pull requests from forks will fail `bundle validate` unless you use a policy that avoids exposing secrets to untrusted code (e.g. restrict workflows or use `pull_request_target` with extreme care).
+- Replace the placeholder host in `databricks.yml` before connecting to a real workspace; keep it aligned with **`DATABRICKS_HOST`**.
+- PAT inherits the **Databricks user’s** workspace and Unity Catalog permissions—use a dedicated automation identity and least-privilege grants where possible.
+- **Fork PRs:** the remote `bundle validate` step is **skipped** when the PR head repo differs from the base repo (forks cannot use repository secrets); offline `pytest` still runs.
+- Rotate **`DATABRICKS_TOKEN`** on policy and revoke when automation ownership changes.
 
 **Gate decision:** **CLEAR** — proceed to QA (SCRUM-34 / QA-01).

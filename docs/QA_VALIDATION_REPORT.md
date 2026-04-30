@@ -9,8 +9,8 @@
 
 ## CI / workspace validation
 
-- GitHub Actions workflow **Validate Databricks bundle** runs `pytest` then `databricks bundle validate -t dev` using the four required secrets.
-- **Local** `databricks bundle validate` requires valid workspace credentials and a reachable `DATABRICKS_HOST`; it is not assumed in offline QA.
+- GitHub Actions workflow **Validate Databricks bundle** runs `pytest` then `databricks bundle validate -t dev` using **`DATABRICKS_HOST`** and **`DATABRICKS_TOKEN`** (repository secrets).
+- **Local** `databricks bundle validate` requires the same env vars (or a `~/.databrickscfg` profile with host + token); see [AUTH_DATABRICKS_TOKEN.md](AUTH_DATABRICKS_TOKEN.md).
 
 ## Medallion acceptance (manual / workspace)
 
@@ -24,4 +24,4 @@
 
 - [fixtures/sample_bronze_event.json](../fixtures/sample_bronze_event.json) can be copied to the configured `bronze_source_path` volume for smoke testing.
 
-**Outcome:** QA evidence recorded; CI is the regression path for bundle validation with live auth.
+**Outcome:** QA evidence recorded; CI is the regression path for bundle validation with live PAT auth.
