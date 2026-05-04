@@ -8,7 +8,29 @@ from __future__ import annotations
 
 import dlt
 from pyspark.sql import functions as F
+from pyspark.sql.types import LongType, StringType, StructField, StructType
 from pyspark.sql.window import Window
+
+# Explicit schema so Auto Loader can start when the bronze path is empty (no CF_EMPTY_DIR_FOR_SCHEMA_INFERENCE).
+# Schema evolution still adds new top-level columns when new files arrive.
+# Fixtures under fixtures/ — upload *.jsonl to bundle.bronze_source_path (JSON Lines, not CSV).
+_BRONZE_SCHEMA = StructType(
+    [
+        StructField("event_id", StringType(), True),
+        StructField("id", StringType(), True),
+        StructField(
+            "payload",
+            StructType(
+                [
+                    StructField("x", LongType(), True),
+                    StructField("source", StringType(), True),
+                    StructField("value", LongType(), True),
+                ]
+            ),
+            True,
+        ),
+    ]
+)
 
 
 def _bronze_path() -> str:
@@ -30,6 +52,7 @@ def bronze_events():
         .option("cloudFiles.format", "json")
         .option("cloudFiles.schemaEvolutionMode", "addNewColumns")
         .option("cloudFiles.schemaLocation", f"{path}/_schemas/bronze_events")
+        .schema(_BRONZE_SCHEMA)
         .load(path)
     )
 

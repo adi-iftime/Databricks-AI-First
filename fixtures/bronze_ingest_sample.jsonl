@@ -1,0 +1,3 @@
+{"event_id":"demo-001","payload":{"x":1,"source":"fixture","value":100}}
+{"event_id":"demo-002","id":"alt-id","payload":{"x":2,"source":"fixture","value":200}}
+{"event_id":"demo-003","payload":{"source":"batch","value":3}}
