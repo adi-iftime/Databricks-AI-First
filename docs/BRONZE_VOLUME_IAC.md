@@ -10,6 +10,8 @@ Auto Loader reads JSON files anywhere under that path (for example **`ci_seed.js
 
 Optional **subfolders** (e.g. **`sample/`**) are path prefixes inside storage. If you use them, create with **`databricks fs mkdir`** before **`fs cp`**, or upload via the Catalog UI.
 
+**Deploy** runs **`databricks fs mkdir`** on the **volume root** (`…/bronze_ingest`) before **`fs cp`** to **`ci_seed.jsonl`**, because **`fs cp`** can fail with *no such directory* until that path prefix exists—without recreating a **`sample/`** subdirectory.
+
 ## Local / manual
 
 ```bash
