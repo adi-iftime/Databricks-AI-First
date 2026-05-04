@@ -68,7 +68,8 @@ def silver_events():
     cleaned = (
         df.withColumn("event_id", F.coalesce(F.col("event_id"), F.col("id")))
         .withColumn("payload", F.col("payload"))
-        .withColumn("source_file", F.col("_metadata.file_path"))
+        # `_metadata` is not present when bronze uses a fixed Auto Loader schema; `input_file_name` works for file paths.
+        .withColumn("source_file", F.input_file_name())
         .withColumn("processed_at", F.current_timestamp())
         .select("event_id", "payload", "source_file", "processed_at")
     )
