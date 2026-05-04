@@ -37,3 +37,4 @@ def test_pipeline_source_exists():
     text = path.read_text(encoding="utf-8")
     assert "@dlt.table" in text
     assert "bronze_events" in text and "silver_events" in text and "gold_daily_event_counts" in text
+    assert "bundle.bronze_source_path" in text, "pipeline should read bronze path from bundle spark.conf"

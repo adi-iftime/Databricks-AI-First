@@ -1,5 +1,20 @@
+"""
+Medallion Delta Live Tables pipeline (bronze → silver → gold).
+
+Pipeline bundle sets `configuration` keys consumed via `spark.conf`:
+  - `bundle.bronze_source_path` — UC volume path for Auto Loader (see `databricks.yml`).
+"""
+
 import dlt
 from pyspark.sql import functions as F
+
+
+def _bronze_source_path() -> str:
+    raw = spark.conf.get(
+        "bundle.bronze_source_path",
+        "/Volumes/cursorfun/default/bronze_ingest",
+    )
+    return raw if raw.endswith("/") else f"{raw}/"
 
 
 @dlt.table(
@@ -11,7 +26,7 @@ def bronze_events():
         spark.readStream.format("cloudFiles")
         .option("cloudFiles.format", "json")
         .option("cloudFiles.inferColumnTypes", "true")
-        .load("/Volumes/cursorfun/default/bronze_ingest/")
+        .load(_bronze_source_path())
     )
 
 
@@ -44,7 +59,7 @@ def silver_events():
 )
 def gold_daily_event_counts():
     df = dlt.read("silver_events")
-    return df.groupBy(F.date_trunc("day", "processed_at").alias("event_date")).agg(
+    return df.groupBy(F.date_trunc("day", F.col("processed_at")).alias("event_date")).agg(
         F.count("*").alias("event_count"),
         F.countDistinct("event_id").alias("unique_events"),
     )
