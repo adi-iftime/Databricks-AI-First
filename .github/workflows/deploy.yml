@@ -19,8 +19,9 @@ jobs:
       BUNDLE_TARGET: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target || 'dev' }}
       # Must match default bundle.bronze_source_path in databricks.yml (directory Auto Loader reads).
       BRONZE_SEED_SRC: fixtures/bronze_ingest_sample.jsonl
-      # Volume root (no `sample/` subpath); must match default bundle.bronze_source_path in databricks.yml
-      BRONZE_SEED_DEST: /Volumes/cursorfun/default/bronze_ingest/ci_seed.jsonl
+      # CLI requires `dbfs:` before /Volumes/... (see Databricks "Manage files in volumes" — without it, mkdir can hit the *local* /Volumes and fail).
+      # Spark / bundle.bronze_source_path stay as `/Volumes/...` (no dbfs:).
+      BRONZE_SEED_DEST: dbfs:/Volumes/cursorfun/default/bronze_ingest/ci_seed.jsonl
     steps:
       - uses: actions/checkout@v4
 

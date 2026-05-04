@@ -14,9 +14,12 @@ Optional **subfolders** (e.g. **`sample/`**) are path prefixes inside storage. I
 
 ## Local / manual
 
+The **Databricks CLI** requires the **`dbfs:`** scheme for UC volume paths (`dbfs:/Volumes/...`). Spark and **`bundle.bronze_source_path`** keep the **`/Volumes/...`** form without **`dbfs:`**.
+
 ```bash
+databricks fs mkdir "dbfs:/Volumes/cursorfun/default/bronze_ingest"
 databricks fs cp fixtures/bronze_ingest_sample.jsonl \
-  "/Volumes/cursorfun/default/bronze_ingest/events.jsonl"
+  "dbfs:/Volumes/cursorfun/default/bronze_ingest/events.jsonl"
 ```
 
 ## Terraform (catalog + volume)

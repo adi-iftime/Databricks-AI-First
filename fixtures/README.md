@@ -14,9 +14,9 @@ The DLT pipeline reads **JSON** from `bundle.bronze_source_path` (see `databrick
 Default bundle path is the **volume root**, e.g. `/Volumes/cursorfun/default/bronze_ingest`:
 
 ```bash
-# From repo root; use the same catalog/schema/volume as in databricks.yml
+# From repo root. For `databricks fs`, Unity Catalog volume paths must use the dbfs: scheme (see Databricks docs).
 databricks fs cp fixtures/bronze_ingest_sample.jsonl \
-  "/Volumes/cursorfun/default/bronze_ingest/events.jsonl"
+  "dbfs:/Volumes/cursorfun/default/bronze_ingest/events.jsonl"
 ```
 
 Or upload **JSON Lines** (`.jsonl`) via the workspace **Catalog** UI. After at least one file exists there, start or refresh the pipeline.
@@ -25,11 +25,11 @@ Or upload **JSON Lines** (`.jsonl`) via the workspace **Catalog** UI. After at l
 
 On **push to `main` or `master`**, **Deploy Databricks bundle** (`.github/workflows/deploy.yml`) runs **`databricks bundle deploy`**, then uploads `bronze_ingest_sample.jsonl` to:
 
-`/Volumes/cursorfun/default/bronze_ingest/ci_seed.jsonl`
+`dbfs:/Volumes/cursorfun/default/bronze_ingest/ci_seed.jsonl` ( **`dbfs:`** required for **`databricks fs`**; pipelines still use **`/Volumes/...`** in Spark config)
 
 Same **`DATABRICKS_HOST`** + **`DATABRICKS_TOKEN`** secrets as deploy. Adjust **`BRONZE_SEED_DEST`** and **`bronze_source_path`** in **`databricks.yml`** if your Unity Catalog layout differs.
 
-Deploy runs **`databricks fs mkdir`** on the **volume root** (`dirname` of **`BRONZE_SEED_DEST`**) before **`fs cp`**, because **`fs cp`** to a file path inside the volume may fail with *no such directory* until that prefix exists (this is not the old **`sample/`** subpath—only **`…/bronze_ingest`**).
+Deploy runs **`databricks fs mkdir`** on the **volume root** (`dirname` **`BRONZE_SEED_DEST`**) before **`fs cp`**. Paths use **`dbfs:/Volumes/...`** so the CLI targets Unity Catalog storage—not the runner’s local filesystem (**`mkdir /Volumes`** errors usually mean the **`dbfs:`** prefix was omitted).
 
 The **bronze volume** and **`cursorfun`** catalog must exist and the token must have **WRITE** on the volume; see **`docs/BRONZE_VOLUME_IAC.md`**.
 
