@@ -8,7 +8,8 @@ alwaysApply: true
 Read the index at [`AGENTS.md`](../../AGENTS.md), then apply the modular config:
 
 - **Agents:** [`../agents/`](../agents/)
-- **Skills:** [`../skills/`](../skills/)
+- **Skills:** [`../skills/`](../skills/) — see [`AGENTS.md`](../../AGENTS.md#skills-catalog) and [`../skills/README.md`](../skills/README.md)
+- **Commands:** [`../commands/`](../commands/) — see [`AGENTS.md`](../../AGENTS.md#cursor-commands)
 - **Rules:** [planning-rules.md](planning-rules.md), [orchestration-rules.md](orchestration-rules.md), [execution-rules.md](execution-rules.md)
 - **Guardrails:** [`../guardrails/guardrails.md`](../guardrails/guardrails.md)
 

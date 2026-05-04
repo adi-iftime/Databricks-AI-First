@@ -10,10 +10,11 @@ This repository uses a **modular, configuration-first** playbook. **Agents** des
 | Layer          | Location                                                                   | Purpose                                                                                                                                                                                                                                                                                                            |
 | -------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Agents**     | [.cursor/agents/](.cursor/agents/)                                         | Role behavior: responsibilities, I/O, constraints (**no embedded skill→worker maps**).                                                                                                                                                                                                                             |
-| **Skills**     | [.cursor/skills/](.cursor/skills/)                                         | Reusable capability modules as **`*.md`** files (routing defaults and expanded workflows; see [`.cursor/skills/README.md`](.cursor/skills/README.md)).                                                                                                                                                                  |
+| **Skills**     | [.cursor/skills/](.cursor/skills/)                                         | Reusable capability modules as **`*.md`** files (routing defaults + workflow skills). Canonical catalog: [Skills catalog](#skills-catalog) below and [`.cursor/skills/README.md`](.cursor/skills/README.md).                                                                                                              |
 | **Rules**      | [.cursor/rules/](.cursor/rules/)                                           | Planning, orchestration, execution policy. **Always-on Cursor rule:** [ai-team-orchestration.mdc](.cursor/rules/ai-team-orchestration.mdc).                                                                                                                                                                        |
 | **Guardrails** | [.cursor/guardrails/](.cursor/guardrails/)                                 | Cross-cutting safety and quality limits. **[require-plan-approval](.cursor/guardrails/require-plan-approval.md)** (critical): no `Task` until plan is approved. **[enforce-atomic-parallelism](.cursor/guardrails/enforce-atomic-parallelism.md)** (high): atomic tasks + parallel dispatch (one `Task` per task). |
 | **Hooks**      | [.cursor/hooks.json](.cursor/hooks.json), [.cursor/hooks/](.cursor/hooks/) | Cursor **command hooks** (e.g. shell after `git push`)—**not** AI agents; they run scripts only.                                                                                                                                                                                                                   |
+| **Commands**   | [.cursor/commands/](.cursor/commands/)                                     | **Slash-command** prompts for Cursor (lifecycle + PR/docs/Jira helpers); each file is one command. See [Cursor commands](#cursor-commands).                                                                                                                                                                          |
 
 
 **Routing:** The planner declares **required skill modules** per task; the **orchestrator** assigns **executing agents** using [orchestration-rules.md](.cursor/rules/orchestration-rules.md) (single place for skill→role defaults and isolation rules).
@@ -180,6 +181,124 @@ Details: [orchestration-rules.md](.cursor/rules/orchestration-rules.md) (Cases A
 
 ---
 
+## Cursor commands
+
+Files under [`.cursor/commands/`](.cursor/commands/) define **slash-style** workflows in Cursor. Each command points agents at **`.cursor/skills/*.md`** and/or **`.cursor/agents/*.md`** as documented inside the file.
+
+### Lifecycle (software delivery path)
+
+| Command file | Intent |
+| ------------ | ------ |
+| [`spec.md`](.cursor/commands/spec.md) | Spec-driven development — PRD before code (`spec-driven-development.md`). |
+| [`plan.md`](.cursor/commands/plan.md) | Planning and task breakdown (`planning-and-task-breakdown.md`). |
+| [`build.md`](.cursor/commands/build.md) | Incremental implementation + TDD (`incremental-implementation.md`, `test-driven-development.md`). |
+| [`test.md`](.cursor/commands/test.md) | TDD / Prove-It (`test-driven-development.md`). |
+| [`review.md`](.cursor/commands/review.md) | Code review (`code-review-and-quality.md` + `reviewer-agent`). |
+| [`code-simplify.md`](.cursor/commands/code-simplify.md) | Simplify without changing behavior (`code-simplification.md`). |
+| [`ship.md`](.cursor/commands/ship.md) | Parallel fan-out to `reviewer-agent`, `security-engineer`, `qa-engineer` + GO/NO-GO (`shipping-and-launch.md`). |
+
+### Repository, PR, and quality helpers
+
+| Command file | Intent |
+| ------------ | ------ |
+| [`pr-description-format.md`](.cursor/commands/pr-description-format.md) | Reformulate a GitHub PR description (`pr-writer-agent`). |
+| [`update-pr.md`](.cursor/commands/update-pr.md) | Update an existing PR body (`pr-writer-agent`). |
+| [`write-new-pr.md`](.cursor/commands/write-new-pr.md) | Draft PR narrative (`pr-writer-agent`). |
+| [`review-pr.md`](.cursor/commands/review-pr.md) | Review a PR by id (`reviewer-agent`). |
+| [`compress-context.md`](.cursor/commands/compress-context.md) | Compress session context. |
+| [`reset-context.md`](.cursor/commands/reset-context.md) | Reset context. |
+| [`documentation-update.md`](.cursor/commands/documentation-update.md) | Documentation pass (`documentation-and-adrs.md` where relevant). |
+| [`jira-story-writer.md`](.cursor/commands/jira-story-writer.md) | Jira story drafting. |
+| [`bug-analyze.md`](.cursor/commands/bug-analyze.md) | Bug triage / analysis (`debugging-and-error-recovery.md`). |
+| [`security-analyze.md`](.cursor/commands/security-analyze.md) | Security-focused pass (`security-and-hardening.md`, `security-engineer`). |
+| [`run-tests.md`](.cursor/commands/run-tests.md) | Tests / QA engineer invocation (`qa-engineer.md`, `testing.md`). |
+
+---
+
+## Skills catalog
+
+This section mirrors **[`.cursor/skills/README.md`](.cursor/skills/README.md)** so **`AGENTS.md`** stays a single entrypoint. Skills are **flat files**: **`.cursor/skills/<name>.md`**.
+
+```
+  DEFINE          PLAN           BUILD          VERIFY         REVIEW          SHIP
+ ┌──────┐      ┌──────┐      ┌──────┐      ┌──────┐      ┌──────┐      ┌──────┐
+ │ Idea │ ───▶ │ Spec │ ───▶ │ Code │ ───▶ │ Test │ ───▶ │  QA  │ ───▶ │  Go  │
+ │Refine│      │  PRD │      │ Impl │      │Debug │      │ Gate │      │ Live │
+ └──────┘      └──────┘      └──────┘      └──────┘      └──────┘      └──────┘
+```
+
+Slash commands **`/spec` … `/ship`** (see [Cursor commands](#cursor-commands)) load these skills; you can also cite any **`.md`** below in **`PLAN:`** tasks.
+
+### Route modules (default orchestrator routing)
+
+| Skill file | Default agent |
+| ---------- | ------------- |
+| [`backend.md`](.cursor/skills/backend.md) | `backend-developer` |
+| [`frontend.md`](.cursor/skills/frontend.md) | `frontend-developer` |
+| [`data-engineering.md`](.cursor/skills/data-engineering.md) | `data-engineer` |
+| [`machine-learning.md`](.cursor/skills/machine-learning.md) | `data-scientist` |
+| [`business-intelligence.md`](.cursor/skills/business-intelligence.md) | `data-analyst` |
+| [`application-security.md`](.cursor/skills/application-security.md) | `security-engineer` |
+| [`testing.md`](.cursor/skills/testing.md) | `qa-engineer` |
+
+### Define
+
+| Skill file | What it does | Use when |
+| ---------- | ------------ | -------- |
+| [`idea-refine.md`](.cursor/skills/idea-refine.md) | Structured divergent/convergent thinking | Rough concept needs exploration |
+| [`spec-driven-development.md`](.cursor/skills/spec-driven-development.md) | PRD before code | New project, feature, or major change |
+
+### Plan
+
+| Skill file | What it does | Use when |
+| ---------- | ------------ | -------- |
+| [`planning-and-task-breakdown.md`](.cursor/skills/planning-and-task-breakdown.md) | Tasks, acceptance criteria, dependency order | Spec exists; need implementable units |
+
+### Build
+
+| Skill file | What it does | Use when |
+| ---------- | ------------ | -------- |
+| [`incremental-implementation.md`](.cursor/skills/incremental-implementation.md) | Vertical slices; implement, test, verify, commit | Multi-file change |
+| [`test-driven-development.md`](.cursor/skills/test-driven-development.md) | Red–green–refactor; Prove-It for bugs | Logic, bugs, behavior changes |
+| [`context-engineering.md`](.cursor/skills/context-engineering.md) | Context packing, rules, MCP | Session/task switches |
+| [`source-driven-development.md`](.cursor/skills/source-driven-development.md) | Docs-first; cite sources | Framework/library work |
+| [`frontend-ui-engineering.md`](.cursor/skills/frontend-ui-engineering.md) | UI, design systems, a11y | User-facing UI |
+| [`api-and-interface-design.md`](.cursor/skills/api-and-interface-design.md) | API contracts, boundaries | Public APIs and modules |
+
+### Verify
+
+| Skill file | What it does | Use when |
+| ---------- | ------------ | -------- |
+| [`browser-testing-with-devtools.md`](.cursor/skills/browser-testing-with-devtools.md) | DevTools MCP for browser apps | Browser debugging |
+| [`debugging-and-error-recovery.md`](.cursor/skills/debugging-and-error-recovery.md) | Reproduce → localize → fix → guard | Failures and unexpected behavior |
+
+### Review
+
+| Skill file | What it does | Use when |
+| ---------- | ------------ | -------- |
+| [`code-review-and-quality.md`](.cursor/skills/code-review-and-quality.md) | Five-axis review; sizing; severity | Before merge |
+| [`code-simplification.md`](.cursor/skills/code-simplification.md) | Simplify while preserving behavior | Maintainability pass |
+| [`security-and-hardening.md`](.cursor/skills/security-and-hardening.md) | OWASP-oriented hardening | Input, auth, data, integrations |
+| [`performance-optimization.md`](.cursor/skills/performance-optimization.md) | Measure-first optimization | Perf requirements / regressions |
+
+### Ship
+
+| Skill file | What it does | Use when |
+| ---------- | ------------ | -------- |
+| [`git-workflow-and-versioning.md`](.cursor/skills/git-workflow-and-versioning.md) | Trunk-style workflow; atomic commits | Everyday Git |
+| [`ci-cd-and-automation.md`](.cursor/skills/ci-cd-and-automation.md) | Pipelines, flags, quality gates | CI/CD |
+| [`deprecation-and-migration.md`](.cursor/skills/deprecation-and-migration.md) | Deprecation and migrations | Sunsetting features |
+| [`documentation-and-adrs.md`](.cursor/skills/documentation-and-adrs.md) | ADRs and technical docs | Architecture / API changes |
+| [`shipping-and-launch.md`](.cursor/skills/shipping-and-launch.md) | Launch checklist, rollback | Production go-live |
+
+### Meta
+
+| Skill file | What it does |
+| ---------- | ------------ |
+| [`using-agent-skills.md`](.cursor/skills/using-agent-skills.md) | How to use this skill pack |
+
+---
+
 ## Rules and guardrails
 
 ### Rule documents
@@ -193,6 +312,7 @@ Details: [orchestration-rules.md](.cursor/rules/orchestration-rules.md) (Cases A
 | [ai-team-orchestration.mdc](.cursor/rules/ai-team-orchestration.mdc)              | **AlwaysApply**          | Short non-negotiables (plan skills-only, security before QA, reviewer posts to GitHub, one Task per dispatch, repair cap). |
 | [require-plan-approval.md](.cursor/guardrails/require-plan-approval.md)           | **Guardrail (critical)** | Blocks `**Task`** until user approves plan (or authorized repair batch).                                                   |
 | [enforce-atomic-parallelism.md](.cursor/guardrails/enforce-atomic-parallelism.md) | **Guardrail (high)**     | Atomic `PLAN:` rows; parallel lanes for independent work; **one `Task` per task** (including same role).                   |
+| [no-verbose-pr-sections.md](.cursor/guardrails/no-verbose-pr-sections.md)         | **pr-writer / PR text**  | Forbids generic **Context** / **Changes** / **Files** PR sections and file-list dumps in pr-writer output.                 |
 
 
 ### Guardrails (high level)
@@ -264,4 +384,4 @@ Prefer fewer roles, smaller tasks, and true parallelism when dependencies allow.
 
 ## Consistency note
 
-If this file ever **diverges** from `.cursor/rules/` or `.cursor/agents/`, treat the **linked rule and agent files** as the behavioral source of truth and **update this index** to match.
+If this file ever **diverges** from `.cursor/rules/`, `.cursor/agents/`, **`.cursor/commands/`**, or **`.cursor/skills/README.md`**, treat the **linked files** as the behavioral source of truth and **update this index** (including the [Skills catalog](#skills-catalog) and [Cursor commands](#cursor-commands) sections) to match.
