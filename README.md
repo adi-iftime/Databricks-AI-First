@@ -12,7 +12,7 @@ Production-oriented starter for **Databricks**: **Databricks Asset Bundles**, **
 
 1. Edit `**databricks.yml`**: set `workspace.host` to your real workspace URL (static literal, no interpolation).
 2. Create GitHub secrets: `**DATABRICKS_HOST`**, `**DATABRICKS_TOKEN`** (see auth doc).
-3. Ensure Unity Catalog paths exist for `**bronze_source_path**` (default `**/Volumes/cursorfun/default/bronze_ingest/sample**`) and create the `**bronze_ingest**` volume under catalog `**cursorfun**`, schema `**default**`, or override paths in the bundle.
+3. Ensure Unity Catalog paths exist for `**bronze_source_path**` (default `**/Volumes/cursorfun/default/bronze_ingest**` — volume root) and create the `**bronze_ingest**` volume under catalog `**cursorfun**`, schema `**default**`, or override paths in the bundle.
 4. Seed the bronze path with JSON files (e.g. `{"event_id":"1","payload":{"x":1}}` per line or one JSON object per file depending on layout).
 5. **Unity Catalog:** the workspace must have a **Unity Catalog metastore** assigned (`No metastore assigned` during deploy means an admin must attach one in account/workspace settings). This bundle publishes to `**catalog`** + `**schema`** and uses `**/Volumes/...`** paths, which require UC.
 6. **DLT compute:** this bundle uses `**serverless: true`** on the pipeline resource. Some workspaces **require** serverless DLT and reject classic pipeline clusters; others block serverless—adjust `serverless` and optional `clusters` to match your workspace policy. `**workspace.root_path`** is user-scoped (`/Workspace/Users/${workspace.current_user.userName}/...`) so deploy state is not under world-writable `**/Workspace/Shared`** unless you change it.
