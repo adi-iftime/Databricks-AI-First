@@ -1,0 +1,30 @@
+---
+description: Modular AI team; skill-first plan; security gate before QA; repair caps
+alwaysApply: true
+---
+
+# AI team orchestration
+
+Read the index at [`AGENTS.md`](../../AGENTS.md), then apply the modular config:
+
+- **Agents:** [`../agents/`](../agents/)
+- **Skills:** [`../skills/`](../skills/)
+- **Rules:** [planning-rules.md](planning-rules.md), [orchestration-rules.md](orchestration-rules.md), [execution-rules.md](execution-rules.md)
+- **Guardrails:** [`../guardrails/guardrails.md`](../guardrails/guardrails.md)
+
+## Non-negotiables
+
+1. **Plan (skills only)** — `PLAN:` lists **required skill modules** + dependencies per [planning-rules.md](planning-rules.md). No worker names in the planner output.
+2. **Orchestrate** — Add **`Assigned agent:`** using [orchestration-rules.md](orchestration-rules.md); **strict separation** for data-engineer vs data-scientist vs data-analyst vs security-engineer; **split** mixed-domain work.
+3. **Order** — Implementation workers → **`security-engineer` gate** → **`qa-engineer`** → **pr-writer** → **reviewer** (see orchestration rules). **Never QA before security CLEAR.** After a PR exists or is updated, **`reviewer-agent`** must **post** its review to the **GitHub PR** (not chat-only).
+4. **Execute** — One **`Task`** per dispatched task; follow [execution-rules.md](execution-rules.md); support **re-execution** after review.
+5. **Repair** — `MINOR FIXES` / `MAJOR ISSUES` per [reviewer-agent.md](../agents/reviewer-agent.md); re-run security after material implementation changes; **max 2 repair iterations** (guardrails).
+
+## Cursor execution
+
+- **Parallel** = multiple `Task` calls in the **same turn** when allowed.
+- **Sequential** = after dependency outputs exist, including the full post-implementation chain: **security-engineer** → **qa-engineer** → **pr-writer-agent** → **reviewer-agent** (never **QA** before security **CLEAR**).
+
+## Trivial requests
+
+Single obvious change → still minimal diffs and guardrails; apply **security gate** when the change is not truly docs-only.
