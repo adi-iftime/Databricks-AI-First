@@ -36,7 +36,7 @@ _BRONZE_SCHEMA = StructType(
 def _bronze_path() -> str:
     return spark.conf.get(
         "bundle.bronze_source_path",
-        "/Volumes/main/default/bronze_ingest/sample",
+        "/Volumes/main/default/bronze_ingest",
     )
 
 

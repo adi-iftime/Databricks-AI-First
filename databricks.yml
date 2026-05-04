@@ -21,7 +21,7 @@ variables:
     default: cursorfun
   bronze_source_path:
     description: Unity Catalog volume or cloud path where raw JSON files land for Auto Loader
-    default: /Volumes/cursorfun/default/bronze_ingest/sample
+    default: /Volumes/cursorfun/default/bronze_ingest
 
 resources:
   pipelines:
