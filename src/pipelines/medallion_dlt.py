@@ -8,29 +8,15 @@ from __future__ import annotations
 
 import dlt
 from pyspark.sql import functions as F
-from pyspark.sql.types import LongType, StringType, StructField, StructType
 from pyspark.sql.window import Window
 
-# Explicit schema so Auto Loader can start when the bronze path is empty (no CF_EMPTY_DIR_FOR_SCHEMA_INFERENCE).
-# Cannot combine full `.schema(...)` with `cloudFiles.schemaEvolutionMode=addNewColumns` (use schemaHints for that).
-# New top-level fields later → extend `_BRONZE_SCHEMA` or switch to `cloudFiles.schemaHints` per Databricks docs.
-# Fixtures under fixtures/ — upload *.jsonl to bundle.bronze_source_path (JSON Lines, not CSV).
-_BRONZE_SCHEMA = StructType(
-    [
-        StructField("event_id", StringType(), True),
-        StructField("id", StringType(), True),
-        StructField(
-            "payload",
-            StructType(
-                [
-                    StructField("x", LongType(), True),
-                    StructField("source", StringType(), True),
-                    StructField("value", LongType(), True),
-                ]
-            ),
-            True,
-        ),
-    ]
+# Use schema *hints* (not full `.schema()`) so Auto Loader keeps `_metadata` (Unity Catalog requires
+# `_metadata.file_path` in silver — `input_file_name()` is not supported in UC). Pair hints with
+# `addNewColumns` per Databricks. Fixtures: `fixtures/*.jsonl` → `bundle.bronze_source_path`.
+# Extend this DDL string if new top-level fields are expected in JSON.
+_BRONZE_SCHEMA_HINTS = (
+    "event_id STRING, id STRING, "
+    "payload STRUCT<x: BIGINT, source: STRING, value: BIGINT>"
 )
 
 
@@ -43,7 +29,7 @@ def _bronze_path() -> str:
 
 @dlt.table(
     name="bronze_events",
-    comment="Bronze: raw JSON via Auto Loader with explicit schema (empty-dir safe)",
+    comment="Bronze: raw JSON via Auto Loader (schemaHints + evolution, preserves _metadata for UC)",
     table_properties={"quality": "bronze"},
 )
 def bronze_events():
@@ -51,8 +37,9 @@ def bronze_events():
     return (
         spark.readStream.format("cloudFiles")
         .option("cloudFiles.format", "json")
+        .option("cloudFiles.schemaHints", _BRONZE_SCHEMA_HINTS)
+        .option("cloudFiles.schemaEvolutionMode", "addNewColumns")
         .option("cloudFiles.schemaLocation", f"{path}/_schemas/bronze_events")
-        .schema(_BRONZE_SCHEMA)
         .load(path)
     )
 
@@ -68,8 +55,7 @@ def silver_events():
     cleaned = (
         df.withColumn("event_id", F.coalesce(F.col("event_id"), F.col("id")))
         .withColumn("payload", F.col("payload"))
-        # `_metadata` is not present when bronze uses a fixed Auto Loader schema; `input_file_name` works for file paths.
-        .withColumn("source_file", F.input_file_name())
+        .withColumn("source_file", F.col("_metadata.file_path"))
         .withColumn("processed_at", F.current_timestamp())
         .select("event_id", "payload", "source_file", "processed_at")
     )
