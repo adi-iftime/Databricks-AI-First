@@ -12,7 +12,8 @@ from pyspark.sql.types import LongType, StringType, StructField, StructType
 from pyspark.sql.window import Window
 
 # Explicit schema so Auto Loader can start when the bronze path is empty (no CF_EMPTY_DIR_FOR_SCHEMA_INFERENCE).
-# Schema evolution still adds new top-level columns when new files arrive.
+# Cannot combine full `.schema(...)` with `cloudFiles.schemaEvolutionMode=addNewColumns` (use schemaHints for that).
+# New top-level fields later → extend `_BRONZE_SCHEMA` or switch to `cloudFiles.schemaHints` per Databricks docs.
 # Fixtures under fixtures/ — upload *.jsonl to bundle.bronze_source_path (JSON Lines, not CSV).
 _BRONZE_SCHEMA = StructType(
     [
@@ -42,7 +43,7 @@ def _bronze_path() -> str:
 
 @dlt.table(
     name="bronze_events",
-    comment="Bronze: raw JSON via Auto Loader with schema evolution",
+    comment="Bronze: raw JSON via Auto Loader with explicit schema (empty-dir safe)",
     table_properties={"quality": "bronze"},
 )
 def bronze_events():
@@ -50,7 +51,6 @@ def bronze_events():
     return (
         spark.readStream.format("cloudFiles")
         .option("cloudFiles.format", "json")
-        .option("cloudFiles.schemaEvolutionMode", "addNewColumns")
         .option("cloudFiles.schemaLocation", f"{path}/_schemas/bronze_events")
         .schema(_BRONZE_SCHEMA)
         .load(path)
