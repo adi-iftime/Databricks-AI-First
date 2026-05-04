@@ -1,0 +1,98 @@
+# On-demand Unity Catalog configuration (Databricks Terraform provider).
+# Run after Azure Bicep and RBAC on storage for the access connector MI.
+# Does NOT run on push — Actions → run workflow manually.
+
+name: Deploy Databricks UC (Terraform)
+
+on:
+  workflow_dispatch:
+    inputs:
+      azure_subscription_id:
+        description: Azure subscription ID
+        required: true
+        type: string
+      azure_resource_group:
+        description: Resource group (access connector + storage)
+        required: true
+        type: string
+      access_connector_name:
+        required: true
+        default: ac-cursorfun-dev
+        type: string
+      storage_account_name:
+        required: true
+        default: stcursorfundevne
+        type: string
+      adls_container_name:
+        description: Metastore / UC container name in the storage account
+        required: true
+        default: uc-metastore-cursorfun-northeurope
+        type: string
+      catalog_name:
+        required: true
+        default: cursorfun
+        type: string
+      storage_credential_name:
+        required: true
+        default: cursorfun-uc-storage-cred
+        type: string
+      external_location_name:
+        required: true
+        default: cursorfun-uc-adls-root
+        type: string
+      create_managed_catalog:
+        description: Set false if catalog already exists (plan imports separately)
+        required: true
+        default: true
+        type: boolean
+      uc_skip_validation:
+        description: Bootstrap only — skip UC validation (fix RBAC then re-run with false)
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra/terraform
+
+    env:
+      TF_VAR_databricks_host: ${{ secrets.DATABRICKS_HOST }}
+      TF_VAR_databricks_token: ${{ secrets.DATABRICKS_TOKEN }}
+      TF_VAR_azure_subscription_id: ${{ github.event.inputs.azure_subscription_id }}
+      TF_VAR_azure_resource_group: ${{ github.event.inputs.azure_resource_group }}
+      TF_VAR_access_connector_name: ${{ github.event.inputs.access_connector_name }}
+      TF_VAR_storage_account_name: ${{ github.event.inputs.storage_account_name }}
+      TF_VAR_adls_container_name: ${{ github.event.inputs.adls_container_name }}
+      TF_VAR_catalog_name: ${{ github.event.inputs.catalog_name }}
+      TF_VAR_storage_credential_name: ${{ github.event.inputs.storage_credential_name }}
+      TF_VAR_external_location_name: ${{ github.event.inputs.external_location_name }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Preflight
+        run: |
+          set -euo pipefail
+          if [ -z "${TF_VAR_databricks_host:-}" ] || [ -z "${TF_VAR_databricks_token:-}" ]; then
+            echo "::error::Set DATABRICKS_HOST and DATABRICKS_TOKEN repository secrets."
+            exit 1
+          fi
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.0
+
+      - name: Terraform init
+        run: terraform init -input=false
+
+      - name: Terraform apply
+        run: |
+          terraform apply -input=false -auto-approve \
+            -var="create_managed_catalog=${{ toJSON(github.event.inputs.create_managed_catalog) }}" \
+            -var="uc_skip_validation=${{ toJSON(github.event.inputs.uc_skip_validation) }}"

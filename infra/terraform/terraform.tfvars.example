@@ -1,0 +1,15 @@
+# Copy to terraform.tfvars (do not commit secrets). Prefer TF_VAR_databricks_token in CI.
+
+databricks_host          = "https://adb-xxxxxxxx.azuredatabricks.net"
+databricks_token         = "dapi-xxxxxxxx"
+azure_subscription_id    = "00000000-0000-0000-0000-000000000000"
+azure_resource_group     = "rg-cursorfun-dev"
+access_connector_name    = "ac-cursorfun-dev"
+storage_account_name     = "stcursorfundevne"
+adls_container_name      = "uc-metastore-cursorfun-northeurope"
+catalog_name             = "cursorfun"
+storage_credential_name  = "cursorfun-uc-storage-cred"
+external_location_name   = "cursorfun-uc-adls-root"
+
+# create_managed_catalog = false   # if catalog already exists — then import databricks_catalog + schema
+# uc_skip_validation     = true     # only if first validation fails (network/RBAC)

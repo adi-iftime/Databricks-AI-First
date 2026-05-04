@@ -26,9 +26,8 @@ def test_databricks_yml_structure():
     clusters = pipes.get("clusters") or []
     assert not clusters, "serverless pipeline must not use classic clusters block"
     libs = pipes["libraries"]
-    assert any(
-        "medallion_dlt.py" in str(lib.get("file", {}).get("path", "")) for lib in libs
-    )
+    pipeline_paths = [str(lib.get("file", {}).get("path", "")) for lib in libs]
+    assert any("medallion_dlt.py" in p for p in pipeline_paths)
 
 
 def test_pipeline_source_exists():
