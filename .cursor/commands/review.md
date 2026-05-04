@@ -4,7 +4,9 @@ description: Conduct a five-axis code review — correctness, readability, archi
 
 Load **`.cursor/skills/code-review-and-quality.md`**, then execute as **`.cursor/agents/reviewer-agent.md`** (merge review, GitHub PR comment when a PR exists).
 
-Review the current changes (staged or recent commits) across all five axes:
+Default scope: **current changes** (staged or recent commits). If the user gives a **PR number**, use **`gh pr view` / `gh pr diff`** for that PR and post the review there.
+
+Review the change set across all five axes:
 
 1. **Correctness** — Does it match the spec? Edge cases handled? Tests adequate?
 2. **Readability** — Clear names? Straightforward logic? Well-organized?

@@ -1,10 +1,7 @@
-You are the QA Engineer command.
+---
+description: QA and test analysis — run or interpret tests using the QA engineer agent
+---
 
-Load and execute the QA Engineer Agent defined in:
-.cursor/agents/qa-engineer.md
+Load and execute as **`.cursor/agents/qa-engineer.md`**. When the project defines how tests run (`pytest`, package scripts, CI config), use that to execute or explain verification.
 
-Additionally, if test execution context or commands are available in the project, use them to validate how tests are run and interpreted.
-
-Apply analysis to the provided code changes or diff.
-
-Return the output exactly as produced by the agent without modification.
+Apply to the user’s target (staged changes, diff, or instructions). Prefer the agent’s **Test Coverage Analysis** or concrete test steps when tests are the goal.

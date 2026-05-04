@@ -10,11 +10,11 @@ This repository uses a **modular, configuration-first** playbook. **Agents** des
 | Layer          | Location                                                                   | Purpose                                                                                                                                                                                                                                                                                                            |
 | -------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Agents**     | [.cursor/agents/](.cursor/agents/)                                         | Role behavior: responsibilities, I/O, constraints (**no embedded skill→worker maps**).                                                                                                                                                                                                                             |
-| **Skills**     | [.cursor/skills/](.cursor/skills/)                                         | Reusable capability modules as **`*.md`** files (routing defaults + workflow skills). Canonical catalog: [Skills catalog](#skills-catalog) below and [`.cursor/skills/README.md`](.cursor/skills/README.md).                                                                                                              |
+| **Skills**     | [.cursor/skills/](.cursor/skills/)                                         | Reusable capability modules as `***.md`** files (routing defaults + workflow skills). Canonical catalog: [Skills catalog](#skills-catalog) below and `[.cursor/skills/README.md](.cursor/skills/README.md)`.                                                                                                       |
 | **Rules**      | [.cursor/rules/](.cursor/rules/)                                           | Planning, orchestration, execution policy. **Always-on Cursor rule:** [ai-team-orchestration.mdc](.cursor/rules/ai-team-orchestration.mdc).                                                                                                                                                                        |
 | **Guardrails** | [.cursor/guardrails/](.cursor/guardrails/)                                 | Cross-cutting safety and quality limits. **[require-plan-approval](.cursor/guardrails/require-plan-approval.md)** (critical): no `Task` until plan is approved. **[enforce-atomic-parallelism](.cursor/guardrails/enforce-atomic-parallelism.md)** (high): atomic tasks + parallel dispatch (one `Task` per task). |
 | **Hooks**      | [.cursor/hooks.json](.cursor/hooks.json), [.cursor/hooks/](.cursor/hooks/) | Cursor **command hooks** (e.g. shell after `git push`)—**not** AI agents; they run scripts only.                                                                                                                                                                                                                   |
-| **Commands**   | [.cursor/commands/](.cursor/commands/)                                     | **Slash-command** prompts for Cursor (lifecycle + PR/docs/Jira helpers); each file is one command. See [Cursor commands](#cursor-commands).                                                                                                                                                                          |
+| **Commands**   | [.cursor/commands/](.cursor/commands/)                                     | **Slash-command** prompts for Cursor (lifecycle + PR/docs/Jira helpers); each file is one command. See [Cursor commands](#cursor-commands).                                                                                                                                                                        |
 
 
 **Routing:** The planner declares **required skill modules** per task; the **orchestrator** assigns **executing agents** using [orchestration-rules.md](.cursor/rules/orchestration-rules.md) (single place for skill→role defaults and isolation rules).
@@ -65,18 +65,18 @@ The orchestrator resolves **skills → agent role** per task. If multiple tasks 
 All subagents are invoked by the controller via Cursor’s `**Task` tool** (see [Cursor mapping](#cursor-mapping-task-tool-and-parallelism)). Agent **definitions** are files under `.cursor/agents/`; the `**name:`** in each file’s YAML frontmatter is the subagent type string used when dispatching.
 
 
-| Agent                  | File                                                          | Role (summary)                                                                                                                                                                        |
-| ---------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **planner-agent**      | [planner-agent.md](.cursor/agents/planner-agent.md)           | `**PLAN:`** with **atomic** tasks + `**WAITING_FOR_APPROVAL`**; skills only (no worker names); splits independent work.                                                               |
-| **orchestrator-agent** | [orchestrator-agent.md](.cursor/agents/orchestrator-agent.md) | After approval: `**PARALLEL:`** / `**SEQUENTIAL:`**, `**Assigned agent:`**; **one `Task` per task** (parallel same-role OK); **blocks `Task`** until approved.                        |
-| **backend-developer**  | [backend-developer.md](.cursor/agents/backend-developer.md)   | Backend implementation worker.                                                                                                                                                        |
-| **frontend-developer** | [frontend-developer.md](.cursor/agents/frontend-developer.md) | Frontend implementation worker.                                                                                                                                                       |
-| **data-engineer**      | [data-engineer.md](.cursor/agents/data-engineer.md)           | Data pipelines / warehouse / engineering surfaces.                                                                                                                                    |
-| **data-scientist**     | [data-scientist.md](.cursor/agents/data-scientist.md)         | ML / experimentation / model-related work.                                                                                                                                            |
-| **data-analyst**       | [data-analyst.md](.cursor/agents/data-analyst.md)             | Analytics, BI, reporting.                                                                                                                                                             |
-| **security-engineer**  | [security-engineer.md](.cursor/agents/security-engineer.md)   | **Security audit** (input handling, authn/z, data protection, infrastructure, third parties); severities **Critical→Info**; **Security Audit Report** + **SECURITY GATE RESULT** **CLEAR** / **BLOCKED** before QA. |
-| **qa-engineer**        | [qa-engineer.md](.cursor/agents/qa-engineer.md)               | **Test strategy**, writing tests, **coverage analysis**, **Prove-It** bugs; unit vs integration vs E2E; **Test Coverage Analysis** template; **only after** security **CLEAR**. |
-| **pr-writer-agent**    | [pr-writer-agent.md](.cursor/agents/pr-writer-agent.md)       | PR **create vs update**, `**featureKey`**, draft defaults, title/body (Git-native; **not** the same as reviewer).                                                                     |
+| Agent                  | File                                                          | Role (summary)                                                                                                                                                                                                                                                               |
+| ---------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **planner-agent**      | [planner-agent.md](.cursor/agents/planner-agent.md)           | `**PLAN:`** with **atomic** tasks + `**WAITING_FOR_APPROVAL`**; skills only (no worker names); splits independent work.                                                                                                                                                      |
+| **orchestrator-agent** | [orchestrator-agent.md](.cursor/agents/orchestrator-agent.md) | After approval: `**PARALLEL:`** / `**SEQUENTIAL:`**, `**Assigned agent:`**; **one `Task` per task** (parallel same-role OK); **blocks `Task`** until approved.                                                                                                               |
+| **backend-developer**  | [backend-developer.md](.cursor/agents/backend-developer.md)   | Backend implementation worker.                                                                                                                                                                                                                                               |
+| **frontend-developer** | [frontend-developer.md](.cursor/agents/frontend-developer.md) | Frontend implementation worker.                                                                                                                                                                                                                                              |
+| **data-engineer**      | [data-engineer.md](.cursor/agents/data-engineer.md)           | Data pipelines / warehouse / engineering surfaces.                                                                                                                                                                                                                           |
+| **data-scientist**     | [data-scientist.md](.cursor/agents/data-scientist.md)         | ML / experimentation / model-related work.                                                                                                                                                                                                                                   |
+| **data-analyst**       | [data-analyst.md](.cursor/agents/data-analyst.md)             | Analytics, BI, reporting.                                                                                                                                                                                                                                                    |
+| **security-engineer**  | [security-engineer.md](.cursor/agents/security-engineer.md)   | **Security audit** (input handling, authn/z, data protection, infrastructure, third parties); severities **Critical→Info**; **Security Audit Report** + **SECURITY GATE RESULT** **CLEAR** / **BLOCKED** before QA.                                                          |
+| **qa-engineer**        | [qa-engineer.md](.cursor/agents/qa-engineer.md)               | **Test strategy**, writing tests, **coverage analysis**, **Prove-It** bugs; unit vs integration vs E2E; **Test Coverage Analysis** template; **only after** security **CLEAR**.                                                                                              |
+| **pr-writer-agent**    | [pr-writer-agent.md](.cursor/agents/pr-writer-agent.md)       | PR **create vs update**, `**featureKey`**, draft defaults, title/body (Git-native; **not** the same as reviewer).                                                                                                                                                            |
 | **reviewer-agent**     | [reviewer-agent.md](.cursor/agents/reviewer-agent.md)         | **Senior / PR review** across **correctness, readability, architecture, security, performance**; findings as **Critical / Important / Suggestion**; emits `**REVIEW RESULT`**; **posts** structured summary to **GitHub PR** (also **PR reviewer** / **pr-reviewer-agent**). |
 
 
@@ -86,7 +86,7 @@ All subagents are invoked by the controller via Cursor’s `**Task` tool** (see 
 
 - Performs a **security-auditor**-style review: **five scope areas** (input handling, authentication & authorization, data protection, infrastructure, third-party integrations), plus **data/platform** concerns when the slice touches pipelines, bundles, Unity Catalog, or CI secrets ([security-engineer.md](.cursor/agents/security-engineer.md)).
 - Classifies findings **Critical / High / Medium / Low / Info** with actionable recommendations; **Critical/High** typically **BLOCK** the gate until addressed or explicitly risk-accepted.
-- Emits a **Security Audit Report** (summary counts, findings with location, proof-of-concept for Critical/High where feasible, positive observations) and the mandatory **`SECURITY GATE RESULT:`** **`CLEAR`** | **`BLOCKED`** block.
+- Emits a **Security Audit Report** (summary counts, findings with location, proof-of-concept for Critical/High where feasible, positive observations) and the mandatory `**SECURITY GATE RESULT:`** `**CLEAR`** | `**BLOCKED`** block.
 - **OWASP-oriented**, dependency/CVE awareness when lockfiles apply; **never** advises disabling security controls as a fix.
 - **Not** a substitute for **reviewer-agent** (broad merge review) or **qa-engineer** (functional verification).
 
@@ -94,8 +94,8 @@ All subagents are invoked by the controller via Cursor’s `**Task` tool** (see 
 
 - **Test-engineer**-style role: **analyze before writing**, choose **unit / integration / E2E** at the lowest sufficient level, **Prove-It** failing test first for bugs, descriptive test names (**Arrange → Act → Assert**), scenario matrix (happy path, empty, boundaries, errors, concurrency where relevant) ([qa-engineer.md](.cursor/agents/qa-engineer.md)).
 - Delivers tests and run commands, or a **Test Coverage Analysis** (current gaps, **Recommended Tests**, **Priority** Critical→Low).
-- Follows **`.cursor/skills/testing.md`** for project conventions; rules: behavior not implementation, one concept per test, independence, mock at **boundaries**, no meaningless always-green tests.
-- **Only after** **`security-engineer`** **`CLEAR`**; does not replace **security** or **reviewer-agent**.
+- Follows `**.cursor/skills/testing.md`** for project conventions; rules: behavior not implementation, one concept per test, independence, mock at **boundaries**, no meaningless always-green tests.
+- **Only after** `**security-engineer`** `**CLEAR`**; does not replace **security** or **reviewer-agent**.
 
 ---
 
@@ -105,13 +105,15 @@ All subagents are invoked by the controller via Cursor’s `**Task` tool** (see 
 
 For any slice with **implementation** work, the **post-implementation** chain is **fixed**:
 
-| Order | Step | Agent |
-| -----: | ---- | ----- |
-| 1 | — | **Implementation workers** (backend, frontend, data-engineer, data-scientist, data-analyst) |
-| 2 | Security gate | **security-engineer** |
-| 3 | Verification | **qa-engineer** (only if step 2 is **CLEAR**) |
-| 4 | PR narrative | **pr-writer-agent** (create/update title & body) |
-| 5 | Final review | **reviewer-agent** (code/PR review + **REVIEW RESULT** + GitHub comment) |
+
+| Order | Step          | Agent                                                                                       |
+| ----- | ------------- | ------------------------------------------------------------------------------------------- |
+| 1     | —             | **Implementation workers** (backend, frontend, data-engineer, data-scientist, data-analyst) |
+| 2     | Security gate | **security-engineer**                                                                       |
+| 3     | Verification  | **qa-engineer** (only if step 2 is **CLEAR**)                                               |
+| 4     | PR narrative  | **pr-writer-agent** (create/update title & body)                                            |
+| 5     | Final review  | **reviewer-agent** (code/PR review + **REVIEW RESULT** + GitHub comment)                    |
+
 
 **Why this order**
 
@@ -154,7 +156,7 @@ flowchart LR
 
 
 
-Details: [orchestration-rules.md](.cursor/rules/orchestration-rules.md) (Cases A/B, Jira note on replan), [reviewer-agent.md](.cursor/agents/reviewer-agent.md) (five-dimension review, **Critical / Important / Suggestion**, mandatory `**REVIEW RESULT**`, GitHub **Review Summary** + comment).
+Details: [orchestration-rules.md](.cursor/rules/orchestration-rules.md) (Cases A/B, Jira note on replan), [reviewer-agent.md](.cursor/agents/reviewer-agent.md) (five-dimension review, **Critical / Important / Suggestion**, mandatory `**REVIEW RESULT`**, GitHub **Review Summary** + comment).
 
 ---
 
@@ -174,7 +176,7 @@ Details: [orchestration-rules.md](.cursor/rules/orchestration-rules.md) (Cases A
 
 ## Skills system
 
-- **Declaration:** Each planned task lists **required skills** as references to **`.cursor/skills/<name>.md`** files (e.g. `backend.md`, `testing.md`, `planning-and-task-breakdown.md`)—see [`.cursor/skills/README.md`](.cursor/skills/README.md) per [planning-rules.md](.cursor/rules/planning-rules.md).
+- **Declaration:** Each planned task lists **required skills** as references to `**.cursor/skills/<name>.md`** files (e.g. `backend.md`, `testing.md`, `planning-and-task-breakdown.md`)—see `[.cursor/skills/README.md](.cursor/skills/README.md)` per [planning-rules.md](.cursor/rules/planning-rules.md).
 - **Consumption:** Workers and the orchestrator use skills as **capability context**; agents do **not** embed full skill catalogs—**orchestration-rules** hold the **default skill module → executing agent** mapping (e.g. `backend.md` → `backend-developer`, `testing.md` → `qa-engineer`, `application-security.md` → `security-engineer`).
 - **Routing influence:** Multi-skill tasks: assign the **most specialized** role for the **primary deliverable**, or **split** the task if two domains are equal weight ([orchestration-rules.md](.cursor/rules/orchestration-rules.md)).
 - **Gaps:** If no skill fits, planner may record `**Skill gap:`**; orchestrator may still assign the **closest** role and note the gap.
@@ -183,41 +185,43 @@ Details: [orchestration-rules.md](.cursor/rules/orchestration-rules.md) (Cases A
 
 ## Cursor commands
 
-Files under [`.cursor/commands/`](.cursor/commands/) define **slash-style** workflows in Cursor. Each command points agents at **`.cursor/skills/*.md`** and/or **`.cursor/agents/*.md`** as documented inside the file.
+Files under `[.cursor/commands/](.cursor/commands/)` define **slash-style** workflows in Cursor. Each command points agents at `**.cursor/skills/*.md`** and/or `**.cursor/agents/*.md`** as documented inside the file.
 
 ### Lifecycle (software delivery path)
 
-| Command file | Intent |
-| ------------ | ------ |
-| [`spec.md`](.cursor/commands/spec.md) | Spec-driven development — PRD before code (`spec-driven-development.md`). |
-| [`plan.md`](.cursor/commands/plan.md) | Planning and task breakdown (`planning-and-task-breakdown.md`). |
-| [`build.md`](.cursor/commands/build.md) | Incremental implementation + TDD (`incremental-implementation.md`, `test-driven-development.md`). |
-| [`test.md`](.cursor/commands/test.md) | TDD / Prove-It (`test-driven-development.md`). |
-| [`review.md`](.cursor/commands/review.md) | Code review (`code-review-and-quality.md` + `reviewer-agent`). |
-| [`code-simplify.md`](.cursor/commands/code-simplify.md) | Simplify without changing behavior (`code-simplification.md`). |
-| [`ship.md`](.cursor/commands/ship.md) | Parallel fan-out to `reviewer-agent`, `security-engineer`, `qa-engineer` + GO/NO-GO (`shipping-and-launch.md`). |
+
+| Command file                                            | Intent                                                                                                          |
+| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `[spec.md](.cursor/commands/spec.md)`                   | Spec-driven development — PRD before code (`spec-driven-development.md`).                                       |
+| `[plan.md](.cursor/commands/plan.md)`                   | Planning and task breakdown (`planning-and-task-breakdown.md`).                                                 |
+| `[build.md](.cursor/commands/build.md)`                 | Incremental implementation + TDD (`incremental-implementation.md`, `test-driven-development.md`).               |
+| `[test.md](.cursor/commands/test.md)`                   | TDD / Prove-It (`test-driven-development.md`).                                                                  |
+| `[review.md](.cursor/commands/review.md)`               | Code review — current changes or a specific PR via `**gh`** (`code-review-and-quality.md` + `reviewer-agent`).  |
+| `[code-simplify.md](.cursor/commands/code-simplify.md)` | Simplify without changing behavior (`code-simplification.md`).                                                  |
+| `[ship.md](.cursor/commands/ship.md)`                   | Parallel fan-out to `reviewer-agent`, `security-engineer`, `qa-engineer` + GO/NO-GO (`shipping-and-launch.md`). |
+
 
 ### Repository, PR, and quality helpers
 
-| Command file | Intent |
-| ------------ | ------ |
-| [`pr-description-format.md`](.cursor/commands/pr-description-format.md) | Reformulate a GitHub PR description (`pr-writer-agent`). |
-| [`update-pr.md`](.cursor/commands/update-pr.md) | Update an existing PR body (`pr-writer-agent`). |
-| [`write-new-pr.md`](.cursor/commands/write-new-pr.md) | Draft PR narrative (`pr-writer-agent`). |
-| [`review-pr.md`](.cursor/commands/review-pr.md) | Review a PR by id (`reviewer-agent`). |
-| [`compress-context.md`](.cursor/commands/compress-context.md) | Compress session context. |
-| [`reset-context.md`](.cursor/commands/reset-context.md) | Reset context. |
-| [`documentation-update.md`](.cursor/commands/documentation-update.md) | Documentation pass (`documentation-and-adrs.md` where relevant). |
-| [`jira-story-writer.md`](.cursor/commands/jira-story-writer.md) | Jira story drafting. |
-| [`bug-analyze.md`](.cursor/commands/bug-analyze.md) | Bug triage / analysis (`debugging-and-error-recovery.md`). |
-| [`security-analyze.md`](.cursor/commands/security-analyze.md) | Security-focused pass (`security-and-hardening.md`, `security-engineer`). |
-| [`run-tests.md`](.cursor/commands/run-tests.md) | Tests / QA engineer invocation (`qa-engineer.md`, `testing.md`). |
+
+| Command file                                                          | Intent                                                                                                         |
+| --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `[update-pr.md](.cursor/commands/update-pr.md)`                       | Update or reformulate PR body — append blocks or full structured rewrite (`pr-writer-agent`; format embedded). |
+| `[write-new-pr.md](.cursor/commands/write-new-pr.md)`                 | New PR with structured title/body template (`pr-writer-agent`; format embedded).                               |
+| `[compress-context.md](.cursor/commands/compress-context.md)`         | Compress session context.                                                                                      |
+| `[reset-context.md](.cursor/commands/reset-context.md)`               | Reset context.                                                                                                 |
+| `[documentation-update.md](.cursor/commands/documentation-update.md)` | Documentation pass (`documentation-and-adrs.md` where relevant).                                               |
+| `[jira-story-writer.md](.cursor/commands/jira-story-writer.md)`       | Jira story drafting.                                                                                           |
+| `[bug-analyze.md](.cursor/commands/bug-analyze.md)`                   | Bug triage / analysis (`debugging-and-error-recovery.md`).                                                     |
+| `[security-analyze.md](.cursor/commands/security-analyze.md)`         | Security-focused pass (`security-and-hardening.md`, `security-engineer`).                                      |
+| `[run-tests.md](.cursor/commands/run-tests.md)`                       | Tests / QA engineer invocation (`qa-engineer.md`, `testing.md`).                                               |
+
 
 ---
 
 ## Skills catalog
 
-This section mirrors **[`.cursor/skills/README.md`](.cursor/skills/README.md)** so **`AGENTS.md`** stays a single entrypoint. Skills are **flat files**: **`.cursor/skills/<name>.md`**.
+This section mirrors `**[.cursor/skills/README.md](.cursor/skills/README.md)**` so `**AGENTS.md**` stays a single entrypoint. Skills are **flat files**: `**.cursor/skills/<name>.md`**.
 
 ```
   DEFINE          PLAN           BUILD          VERIFY         REVIEW          SHIP
@@ -227,75 +231,91 @@ This section mirrors **[`.cursor/skills/README.md`](.cursor/skills/README.md)** 
  └──────┘      └──────┘      └──────┘      └──────┘      └──────┘      └──────┘
 ```
 
-Slash commands **`/spec` … `/ship`** (see [Cursor commands](#cursor-commands)) load these skills; you can also cite any **`.md`** below in **`PLAN:`** tasks.
+Slash commands `**/spec` … `/ship**` (see [Cursor commands](#cursor-commands)) load these skills; you can also cite any `**.md**` below in `**PLAN:**` tasks.
 
 ### Route modules (default orchestrator routing)
 
-| Skill file | Default agent |
-| ---------- | ------------- |
-| [`backend.md`](.cursor/skills/backend.md) | `backend-developer` |
-| [`frontend.md`](.cursor/skills/frontend.md) | `frontend-developer` |
-| [`data-engineering.md`](.cursor/skills/data-engineering.md) | `data-engineer` |
-| [`machine-learning.md`](.cursor/skills/machine-learning.md) | `data-scientist` |
-| [`business-intelligence.md`](.cursor/skills/business-intelligence.md) | `data-analyst` |
-| [`application-security.md`](.cursor/skills/application-security.md) | `security-engineer` |
-| [`testing.md`](.cursor/skills/testing.md) | `qa-engineer` |
+
+| Skill file                                                            | Default agent        |
+| --------------------------------------------------------------------- | -------------------- |
+| `[backend.md](.cursor/skills/backend.md)`                             | `backend-developer`  |
+| `[frontend.md](.cursor/skills/frontend.md)`                           | `frontend-developer` |
+| `[data-engineering.md](.cursor/skills/data-engineering.md)`           | `data-engineer`      |
+| `[machine-learning.md](.cursor/skills/machine-learning.md)`           | `data-scientist`     |
+| `[business-intelligence.md](.cursor/skills/business-intelligence.md)` | `data-analyst`       |
+| `[application-security.md](.cursor/skills/application-security.md)`   | `security-engineer`  |
+| `[testing.md](.cursor/skills/testing.md)`                             | `qa-engineer`        |
+
 
 ### Define
 
-| Skill file | What it does | Use when |
-| ---------- | ------------ | -------- |
-| [`idea-refine.md`](.cursor/skills/idea-refine.md) | Structured divergent/convergent thinking | Rough concept needs exploration |
-| [`spec-driven-development.md`](.cursor/skills/spec-driven-development.md) | PRD before code | New project, feature, or major change |
+
+| Skill file                                                                | What it does                             | Use when                              |
+| ------------------------------------------------------------------------- | ---------------------------------------- | ------------------------------------- |
+| `[idea-refine.md](.cursor/skills/idea-refine.md)`                         | Structured divergent/convergent thinking | Rough concept needs exploration       |
+| `[spec-driven-development.md](.cursor/skills/spec-driven-development.md)` | PRD before code                          | New project, feature, or major change |
+
 
 ### Plan
 
-| Skill file | What it does | Use when |
-| ---------- | ------------ | -------- |
-| [`planning-and-task-breakdown.md`](.cursor/skills/planning-and-task-breakdown.md) | Tasks, acceptance criteria, dependency order | Spec exists; need implementable units |
+
+| Skill file                                                                        | What it does                                 | Use when                              |
+| --------------------------------------------------------------------------------- | -------------------------------------------- | ------------------------------------- |
+| `[planning-and-task-breakdown.md](.cursor/skills/planning-and-task-breakdown.md)` | Tasks, acceptance criteria, dependency order | Spec exists; need implementable units |
+
 
 ### Build
 
-| Skill file | What it does | Use when |
-| ---------- | ------------ | -------- |
-| [`incremental-implementation.md`](.cursor/skills/incremental-implementation.md) | Vertical slices; implement, test, verify, commit | Multi-file change |
-| [`test-driven-development.md`](.cursor/skills/test-driven-development.md) | Red–green–refactor; Prove-It for bugs | Logic, bugs, behavior changes |
-| [`context-engineering.md`](.cursor/skills/context-engineering.md) | Context packing, rules, MCP | Session/task switches |
-| [`source-driven-development.md`](.cursor/skills/source-driven-development.md) | Docs-first; cite sources | Framework/library work |
-| [`frontend-ui-engineering.md`](.cursor/skills/frontend-ui-engineering.md) | UI, design systems, a11y | User-facing UI |
-| [`api-and-interface-design.md`](.cursor/skills/api-and-interface-design.md) | API contracts, boundaries | Public APIs and modules |
+
+| Skill file                                                                      | What it does                                     | Use when                      |
+| ------------------------------------------------------------------------------- | ------------------------------------------------ | ----------------------------- |
+| `[incremental-implementation.md](.cursor/skills/incremental-implementation.md)` | Vertical slices; implement, test, verify, commit | Multi-file change             |
+| `[test-driven-development.md](.cursor/skills/test-driven-development.md)`       | Red–green–refactor; Prove-It for bugs            | Logic, bugs, behavior changes |
+| `[context-engineering.md](.cursor/skills/context-engineering.md)`               | Context packing, rules, MCP                      | Session/task switches         |
+| `[source-driven-development.md](.cursor/skills/source-driven-development.md)`   | Docs-first; cite sources                         | Framework/library work        |
+| `[frontend-ui-engineering.md](.cursor/skills/frontend-ui-engineering.md)`       | UI, design systems, a11y                         | User-facing UI                |
+| `[api-and-interface-design.md](.cursor/skills/api-and-interface-design.md)`     | API contracts, boundaries                        | Public APIs and modules       |
+
 
 ### Verify
 
-| Skill file | What it does | Use when |
-| ---------- | ------------ | -------- |
-| [`browser-testing-with-devtools.md`](.cursor/skills/browser-testing-with-devtools.md) | DevTools MCP for browser apps | Browser debugging |
-| [`debugging-and-error-recovery.md`](.cursor/skills/debugging-and-error-recovery.md) | Reproduce → localize → fix → guard | Failures and unexpected behavior |
+
+| Skill file                                                                            | What it does                       | Use when                         |
+| ------------------------------------------------------------------------------------- | ---------------------------------- | -------------------------------- |
+| `[browser-testing-with-devtools.md](.cursor/skills/browser-testing-with-devtools.md)` | DevTools MCP for browser apps      | Browser debugging                |
+| `[debugging-and-error-recovery.md](.cursor/skills/debugging-and-error-recovery.md)`   | Reproduce → localize → fix → guard | Failures and unexpected behavior |
+
 
 ### Review
 
-| Skill file | What it does | Use when |
-| ---------- | ------------ | -------- |
-| [`code-review-and-quality.md`](.cursor/skills/code-review-and-quality.md) | Five-axis review; sizing; severity | Before merge |
-| [`code-simplification.md`](.cursor/skills/code-simplification.md) | Simplify while preserving behavior | Maintainability pass |
-| [`security-and-hardening.md`](.cursor/skills/security-and-hardening.md) | OWASP-oriented hardening | Input, auth, data, integrations |
-| [`performance-optimization.md`](.cursor/skills/performance-optimization.md) | Measure-first optimization | Perf requirements / regressions |
+
+| Skill file                                                                  | What it does                       | Use when                        |
+| --------------------------------------------------------------------------- | ---------------------------------- | ------------------------------- |
+| `[code-review-and-quality.md](.cursor/skills/code-review-and-quality.md)`   | Five-axis review; sizing; severity | Before merge                    |
+| `[code-simplification.md](.cursor/skills/code-simplification.md)`           | Simplify while preserving behavior | Maintainability pass            |
+| `[security-and-hardening.md](.cursor/skills/security-and-hardening.md)`     | OWASP-oriented hardening           | Input, auth, data, integrations |
+| `[performance-optimization.md](.cursor/skills/performance-optimization.md)` | Measure-first optimization         | Perf requirements / regressions |
+
 
 ### Ship
 
-| Skill file | What it does | Use when |
-| ---------- | ------------ | -------- |
-| [`git-workflow-and-versioning.md`](.cursor/skills/git-workflow-and-versioning.md) | Trunk-style workflow; atomic commits | Everyday Git |
-| [`ci-cd-and-automation.md`](.cursor/skills/ci-cd-and-automation.md) | Pipelines, flags, quality gates | CI/CD |
-| [`deprecation-and-migration.md`](.cursor/skills/deprecation-and-migration.md) | Deprecation and migrations | Sunsetting features |
-| [`documentation-and-adrs.md`](.cursor/skills/documentation-and-adrs.md) | ADRs and technical docs | Architecture / API changes |
-| [`shipping-and-launch.md`](.cursor/skills/shipping-and-launch.md) | Launch checklist, rollback | Production go-live |
+
+| Skill file                                                                        | What it does                         | Use when                   |
+| --------------------------------------------------------------------------------- | ------------------------------------ | -------------------------- |
+| `[git-workflow-and-versioning.md](.cursor/skills/git-workflow-and-versioning.md)` | Trunk-style workflow; atomic commits | Everyday Git               |
+| `[ci-cd-and-automation.md](.cursor/skills/ci-cd-and-automation.md)`               | Pipelines, flags, quality gates      | CI/CD                      |
+| `[deprecation-and-migration.md](.cursor/skills/deprecation-and-migration.md)`     | Deprecation and migrations           | Sunsetting features        |
+| `[documentation-and-adrs.md](.cursor/skills/documentation-and-adrs.md)`           | ADRs and technical docs              | Architecture / API changes |
+| `[shipping-and-launch.md](.cursor/skills/shipping-and-launch.md)`                 | Launch checklist, rollback           | Production go-live         |
+
 
 ### Meta
 
-| Skill file | What it does |
-| ---------- | ------------ |
-| [`using-agent-skills.md`](.cursor/skills/using-agent-skills.md) | How to use this skill pack |
+
+| Skill file                                                      | What it does               |
+| --------------------------------------------------------------- | -------------------------- |
+| `[using-agent-skills.md](.cursor/skills/using-agent-skills.md)` | How to use this skill pack |
+
 
 ---
 
@@ -384,4 +404,4 @@ Prefer fewer roles, smaller tasks, and true parallelism when dependencies allow.
 
 ## Consistency note
 
-If this file ever **diverges** from `.cursor/rules/`, `.cursor/agents/`, **`.cursor/commands/`**, or **`.cursor/skills/README.md`**, treat the **linked files** as the behavioral source of truth and **update this index** (including the [Skills catalog](#skills-catalog) and [Cursor commands](#cursor-commands) sections) to match.
+If this file ever **diverges** from `.cursor/rules/`, `.cursor/agents/`, `**.cursor/commands/`**, or `**.cursor/skills/README.md`**, treat the **linked files** as the behavioral source of truth and **update this index** (including the [Skills catalog](#skills-catalog) and [Cursor commands](#cursor-commands) sections) to match.

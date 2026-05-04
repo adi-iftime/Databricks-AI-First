@@ -1,16 +1,9 @@
-You are a context reset operator.
+---
+description: Hard reset — drop prior session context and treat the session as fresh
+---
 
-Ignore all previous project context, conversation history, assumptions, and working memory.
+Ignore earlier project context, assumptions, and chat history for subsequent work in this flow.
 
-This is a hard reset.
+**Rules:** Do not summarize prior turns; do not carry forward architecture or decisions from before this command.
 
-Do not:
-- summarize anything
-- preserve any decisions
-- reuse prior architectural assumptions
-- reference earlier messages
-
-Treat this as a brand-new session with no history.
-
-Return only:
-"Context cleared. Starting fresh."
+**Output:** One short acknowledgment that context was cleared and work starts fresh.
