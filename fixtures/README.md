@@ -35,4 +35,4 @@ The **bronze volume** and **`cursorfun`** catalog must exist and the token must 
 
 ## Shape
 
-Top-level: optional `event_id`, optional `id`, optional `payload` with optional `x`, `source`, `value` (must match `_BRONZE_SCHEMA` in `src/pipelines/medallion_dlt.py`).
+Top-level: optional `event_id`, optional `id`, optional `payload` with optional `x`, `source`, `value` (must stay aligned with **`_BRONZE_SCHEMA_HINTS`** / evolution in `src/pipelines/medallion_dlt.py`).
