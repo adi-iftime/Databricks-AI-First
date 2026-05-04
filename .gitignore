@@ -13,6 +13,17 @@ __pycache__/
 .databricks/
 .bundle/
 
+# Bicep compile output (use infra/main.bicep as source of truth)
+infra/main.json
+
+# Terraform local state (commit .terraform.lock.hcl after provider pin)
+infra/terraform/.terraform/
+infra/terraform/*.tfstate
+infra/terraform/*.tfstate.*
+infra/terraform/*.tfvars
+!infra/terraform/terraform.tfvars.example
+infra/terraform/crash.log
+
 # Editor and OS artifacts
 .DS_Store
 .idea/

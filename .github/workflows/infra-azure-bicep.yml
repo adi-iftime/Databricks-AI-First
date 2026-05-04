@@ -1,0 +1,92 @@
+# On-demand Azure infrastructure: Databricks workspace, access connector, storage (Bicep).
+# Does NOT run on push or merge — Actions → run workflow manually.
+#
+# Prerequisites:
+# - Resource group must exist (create it in Azure Portal or CLI).
+# - Federated credentials (OIDC): GitHub → Azure app registration, plus repo secrets:
+#     AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_SUBSCRIPTION_ID
+#   See: https://learn.microsoft.com/azure/developer/github/connect-from-azure
+
+name: Deploy Azure infrastructure (Bicep)
+
+on:
+  workflow_dispatch:
+    inputs:
+      resource_group:
+        description: Existing Azure resource group name
+        required: true
+        type: string
+      location:
+        description: Azure region
+        required: true
+        default: northeurope
+        type: string
+      workspace_name:
+        description: Databricks workspace name
+        required: true
+        default: adb-cursorfun-dev
+        type: string
+      storage_account_name:
+        description: Storage account name (globally unique, lowercase)
+        required: true
+        default: stcursorfundevne
+        type: string
+      access_connector_name:
+        description: Databricks access connector name
+        required: true
+        default: ac-cursorfun-dev
+        type: string
+      authorization_principal_id:
+        description: Optional GUID for workspace authorizations (Unity/metastore). Leave "skip" to deploy without authorizations.
+        required: false
+        default: skip
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Ensure Azure CLI Bicep support
+        run: az bicep version || az bicep install
+
+      - name: Deploy Bicep to resource group
+        env:
+          RG: ${{ github.event.inputs.resource_group }}
+          LOC: ${{ github.event.inputs.location }}
+          WS: ${{ github.event.inputs.workspace_name }}
+          ST: ${{ github.event.inputs.storage_account_name }}
+          AC: ${{ github.event.inputs.access_connector_name }}
+          AUTH: ${{ github.event.inputs.authorization_principal_id }}
+        run: |
+          set -euo pipefail
+          if [ -z "${RG}" ]; then
+            echo "::error::resource_group is required"
+            exit 1
+          fi
+          PRINCIPAL=""
+          if [ "${AUTH}" != "skip" ] && [ -n "${AUTH}" ]; then
+            PRINCIPAL="${AUTH}"
+          fi
+          az deployment group create \
+            --resource-group "${RG}" \
+            --name "adb-infra-${GITHUB_RUN_ID}" \
+            --template-file infra/main.bicep \
+            --parameters \
+              location="${LOC}" \
+              workspaces_adb_cursorfun_dev_name="${WS}" \
+              storageAccounts_stcursorfundevne_name="${ST}" \
+              accessConnectors_ac_cursorfun_dev_name="${AC}" \
+              workspaceAuthorizationPrincipalId="${PRINCIPAL}"

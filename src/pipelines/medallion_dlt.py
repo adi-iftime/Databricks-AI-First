@@ -37,16 +37,15 @@ def bronze_events():
 @dlt.expect_or_fail("event_id_not_null", "event_id IS NOT NULL")
 def silver_events():
     df = dlt.read_stream("bronze_events")
-
-    if "_metadata" in df.columns:
-        source_file_col = F.col("_metadata.file_path")
-    else:
-        source_file_col = F.lit(None).cast("string")
+    has_metadata = "_metadata" in df.columns
+    source_file = (
+        F.col("_metadata.file_path") if has_metadata else F.lit(None).cast("string")
+    )
 
     cleaned = (
         df.withColumn("event_id", F.coalesce(F.col("event_id"), F.col("id")))
         .withColumn("payload", F.col("payload"))
-        .withColumn("source_file", source_file_col)
+        .withColumn("source_file", source_file)
         .withColumn("processed_at", F.current_timestamp())
         .select("event_id", "payload", "source_file", "processed_at")
     )
