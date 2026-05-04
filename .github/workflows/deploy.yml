@@ -44,5 +44,8 @@ jobs:
         run: |
           set -euo pipefail
           test -f "${BRONZE_SEED_SRC}"
+          BRONZE_SEED_DIR="$(dirname "${BRONZE_SEED_DEST}")"
+          echo "Ensuring UC volume path exists: ${BRONZE_SEED_DIR}"
+          databricks fs mkdir "${BRONZE_SEED_DIR}"
           echo "Uploading ${BRONZE_SEED_SRC} -> ${BRONZE_SEED_DEST}"
           databricks fs cp "${BRONZE_SEED_SRC}" "${BRONZE_SEED_DEST}" --overwrite
