@@ -73,30 +73,64 @@ All subagents are invoked by the controller via Cursor’s `**Task` tool** (see 
 | **data-engineer**      | [data-engineer.md](.cursor/agents/data-engineer.md)           | Data pipelines / warehouse / engineering surfaces.                                                                                                                                    |
 | **data-scientist**     | [data-scientist.md](.cursor/agents/data-scientist.md)         | ML / experimentation / model-related work.                                                                                                                                            |
 | **data-analyst**       | [data-analyst.md](.cursor/agents/data-analyst.md)             | Analytics, BI, reporting.                                                                                                                                                             |
-| **security-engineer**  | [security-engineer.md](.cursor/agents/security-engineer.md)   | **Security gate** before QA: **CLEAR** / **BLOCKED**.                                                                                                                                 |
-| **qa-engineer**        | [qa-engineer.md](.cursor/agents/qa-engineer.md)               | Tests / verification **only after** security **CLEAR** for the slice.                                                                                                                 |
+| **security-engineer**  | [security-engineer.md](.cursor/agents/security-engineer.md)   | **Security audit** (input handling, authn/z, data protection, infrastructure, third parties); severities **Critical→Info**; **Security Audit Report** + **SECURITY GATE RESULT** **CLEAR** / **BLOCKED** before QA. |
+| **qa-engineer**        | [qa-engineer.md](.cursor/agents/qa-engineer.md)               | **Test strategy**, writing tests, **coverage analysis**, **Prove-It** bugs; unit vs integration vs E2E; **Test Coverage Analysis** template; **only after** security **CLEAR**. |
 | **pr-writer-agent**    | [pr-writer-agent.md](.cursor/agents/pr-writer-agent.md)       | PR **create vs update**, `**featureKey`**, draft defaults, title/body (Git-native; **not** the same as reviewer).                                                                     |
-| **reviewer-agent**     | [reviewer-agent.md](.cursor/agents/reviewer-agent.md)         | Final **code/PR review**; emits `**REVIEW RESULT`**; **posts** summary to **GitHub PR** as a comment when a PR exists (also called **PR reviewer** / **pr-reviewer-agent** in prose). |
+| **reviewer-agent**     | [reviewer-agent.md](.cursor/agents/reviewer-agent.md)         | **Senior / PR review** across **correctness, readability, architecture, security, performance**; findings as **Critical / Important / Suggestion**; emits `**REVIEW RESULT`**; **posts** structured summary to **GitHub PR** (also **PR reviewer** / **pr-reviewer-agent**). |
 
 
 **Worker pool:** `backend-developer`, `frontend-developer`, `data-engineer`, `data-scientist`, and `data-analyst` are the **implementation** workers. **security-engineer** and **qa-engineer** are **gates/verification** roles. **planner-agent** and **orchestrator-agent** are **meta** roles; **pr-writer-agent** and **reviewer-agent** handle **PR narrative** vs **PR review feedback** respectively.
+
+### security-engineer (gate before QA)
+
+- Performs a **security-auditor**-style review: **five scope areas** (input handling, authentication & authorization, data protection, infrastructure, third-party integrations), plus **data/platform** concerns when the slice touches pipelines, bundles, Unity Catalog, or CI secrets ([security-engineer.md](.cursor/agents/security-engineer.md)).
+- Classifies findings **Critical / High / Medium / Low / Info** with actionable recommendations; **Critical/High** typically **BLOCK** the gate until addressed or explicitly risk-accepted.
+- Emits a **Security Audit Report** (summary counts, findings with location, proof-of-concept for Critical/High where feasible, positive observations) and the mandatory **`SECURITY GATE RESULT:`** **`CLEAR`** | **`BLOCKED`** block.
+- **OWASP-oriented**, dependency/CVE awareness when lockfiles apply; **never** advises disabling security controls as a fix.
+- **Not** a substitute for **reviewer-agent** (broad merge review) or **qa-engineer** (functional verification).
+
+### qa-engineer (verification after security CLEAR)
+
+- **Test-engineer**-style role: **analyze before writing**, choose **unit / integration / E2E** at the lowest sufficient level, **Prove-It** failing test first for bugs, descriptive test names (**Arrange → Act → Assert**), scenario matrix (happy path, empty, boundaries, errors, concurrency where relevant) ([qa-engineer.md](.cursor/agents/qa-engineer.md)).
+- Delivers tests and run commands, or a **Test Coverage Analysis** (current gaps, **Recommended Tests**, **Priority** Critical→Low).
+- Follows **`.cursor/skills/testing.md`** for project conventions; rules: behavior not implementation, one concept per test, independence, mock at **boundaries**, no meaningless always-green tests.
+- **Only after** **`security-engineer`** **`CLEAR`**; does not replace **security** or **reviewer-agent**.
 
 ---
 
 ## Execution workflow (full pipeline)
 
-The **mandatory relative order** for any feature slice that includes **implementation work** (backend, frontend, or data implementation deliverables) is defined in [orchestration-rules.md](.cursor/rules/orchestration-rules.md). **Before step 3**, the **human approval gate** above must pass ([require-plan-approval.md](.cursor/guardrails/require-plan-approval.md)).
+### Phase order (reviewer, security, QA) — **decision**
+
+For any slice with **implementation** work, the **post-implementation** chain is **fixed**:
+
+| Order | Step | Agent |
+| -----: | ---- | ----- |
+| 1 | — | **Implementation workers** (backend, frontend, data-engineer, data-scientist, data-analyst) |
+| 2 | Security gate | **security-engineer** |
+| 3 | Verification | **qa-engineer** (only if step 2 is **CLEAR**) |
+| 4 | PR narrative | **pr-writer-agent** (create/update title & body) |
+| 5 | Final review | **reviewer-agent** (code/PR review + **REVIEW RESULT** + GitHub comment) |
+
+**Why this order**
+
+1. **security-engineer before qa-engineer** — Catch exploitable and policy issues before spending effort on full verification; **qa-engineer** must not run on a **BLOCKED** slice.
+2. **qa-engineer before pr-writer-agent** — Tests and quality evidence reflect the **gated** code; the PR description can honestly reference passing checks.
+3. **pr-writer-agent before reviewer-agent** — The **reviewer** should see a structured PR narrative (and a PR URL) as well as the diff; **pr-writer** does not replace review.
+4. **reviewer-agent last** — Merge decision (**APPROVED** / **MINOR FIXES** / **MAJOR ISSUES**) closes the loop; repairs may re-enter the chain from **implementation** and, when code changes, from **security-engineer** again (see [orchestration-rules.md](.cursor/rules/orchestration-rules.md) Case A).
+
+The **mandatory relative order** for any feature slice that includes **implementation work** (backend, frontend, or data implementation deliverables) is defined in [orchestration-rules.md](.cursor/rules/orchestration-rules.md). **Before step 3** below, the **human approval gate** above must pass ([require-plan-approval.md](.cursor/guardrails/require-plan-approval.md)).
 
 1. **Planner** — Emit `**PLAN:`** with **required skills** (`.cursor/skills/*.md` references) and **dependencies** only ([planning-rules.md](.cursor/rules/planning-rules.md)); append `**STATUS: WAITING_FOR_APPROVAL`** until the user approves ([planner-agent.md](.cursor/agents/planner-agent.md)).
 2. **User approval** — Explicit approve / go ahead / run / proceed (or recorded `**STATUS: APPROVED`**).
 3. **Orchestrator** — Add `**Assigned agent:`** per task; group into `**PARALLEL:`** / `**SEQUENTIAL:`**; enforce **data / ML / BI / security isolation** (split mixed-domain work). **Blocked** if approval is missing ([orchestrator-agent.md](.cursor/agents/orchestrator-agent.md)).
 4. **Implementation workers** — Run tasks that implement the slice (parallel when dependencies allow).
-5. **security-engineer** — **Mandatory** security gate **before QA**; output **CLEAR** or **BLOCKED**.
-6. **qa-engineer** — Runs **only after** security **CLEAR** for the same slice.
+5. **security-engineer** — **Mandatory** security gate **before QA**; **Security Audit Report** + **SECURITY GATE RESULT** **CLEAR** or **BLOCKED** ([security-engineer.md](.cursor/agents/security-engineer.md)).
+6. **qa-engineer** — **Only after** security **CLEAR**; test strategy, implementation, or coverage report per [qa-engineer.md](.cursor/agents/qa-engineer.md).
 7. **pr-writer-agent** — After QA (or when policy says PR notes are needed): title/description, **update vs create**, **featureKey**, draft behavior ([pr-writer-agent.md](.cursor/agents/pr-writer-agent.md)).
-8. **reviewer-agent** — Final review of narrative + diff; must receive **PR URL/number**, base/head, and metadata; emits **REVIEW RESULT** and **posts** a **GitHub PR comment** ([reviewer-agent.md](.cursor/agents/reviewer-agent.md)).
+8. **reviewer-agent** — Final review of narrative + diff using the **five-dimension** framework and **Critical / Important / Suggestion** severities; must receive **PR URL/number**, base/head, and metadata; emits **REVIEW RESULT** and **posts** a **GitHub PR comment** (Review Summary template + posting rules in [reviewer-agent.md](.cursor/agents/reviewer-agent.md)).
 
-**Merge / continue decision:** Driven by `**REVIEW RESULT:`** — `APPROVED` (end), `MINOR FIXES` (targeted re-run workers), `MAJOR ISSUES` (replan). After repairs, loop back to **pr-writer** (if needed) and **reviewer** until **APPROVED** or **repair cap**.
+**Merge / continue decision:** Driven by `**REVIEW RESULT:`** — `APPROVED` (end), `MINOR FIXES` (targeted re-run workers), `MAJOR ISSUES` (replan). After repairs, re-run the **post-implementation** steps as needed: if implementation code changed, **security-engineer** again, then **qa-engineer**, then **pr-writer** (if the PR text should change), then **reviewer-agent**, until **APPROVED** or **repair cap**.
 
 Purely **docs-only** or **analytical** slices with **no** implementation surface may omit implementation workers; still use **security-engineer** when auth, data handling, or deployable artifacts are in play—when uncertain, include the gate.
 
@@ -119,7 +153,7 @@ flowchart LR
 
 
 
-Details: [orchestration-rules.md](.cursor/rules/orchestration-rules.md) (Cases A/B, Jira note on replan), [reviewer-agent.md](.cursor/agents/reviewer-agent.md) (mandatory `**REVIEW RESULT**` and GitHub comment).
+Details: [orchestration-rules.md](.cursor/rules/orchestration-rules.md) (Cases A/B, Jira note on replan), [reviewer-agent.md](.cursor/agents/reviewer-agent.md) (five-dimension review, **Critical / Important / Suggestion**, mandatory `**REVIEW RESULT**`, GitHub **Review Summary** + comment).
 
 ---
 
@@ -185,8 +219,11 @@ From [guardrails.md](.cursor/guardrails/guardrails.md):
 
 ### reviewer-agent (quality gate + GitHub visibility)
 
-- Emits structured `**REVIEW RESULT:`** (`APPROVED` | `MINOR FIXES` | `MAJOR ISSUES`) plus `**ISSUES`** and `**RECOMMENDED ACTION`** for the orchestrator.
-- **Must post** a public summary to the **GitHub PR** (`gh pr comment` or API) when a PR is in scope—not chat-only. Does **not** edit PR title/body (that is **pr-writer-agent**).
+- Evaluates changes like a **Staff-level** review: **correctness, readability, architecture, security, performance** (see [reviewer-agent.md](.cursor/agents/reviewer-agent.md)).
+- Classifies each finding as **Critical**, **Important**, or **Suggestion**; maps them to merge posture and to `**REVIEW RESULT:`** (`APPROVED` | `MINOR FIXES` | `MAJOR ISSUES`).
+- Public PR comment uses the **Review Summary** template (verdict **APPROVE** / **REQUEST CHANGES**, issues by severity, what’s done well, verification story); **Critical** issues must not ship as **APPROVED**.
+- Emits `**ISSUES`** and `**RECOMMENDED ACTION`** for the orchestrator in the mandatory routing block.
+- **Must post** to the **GitHub PR** (`gh pr comment` or API) when a PR is in scope—not chat-only. Does **not** edit PR title/body (that is **pr-writer-agent**).
 
 ### Automation hooks (draft PR on push)
 
@@ -200,7 +237,7 @@ From [guardrails.md](.cursor/guardrails/guardrails.md):
 
 - **One** runnable task → **one** `**Task`** subagent invocation unless guardrails forbid splitting ([orchestration-rules.md](.cursor/rules/orchestration-rules.md)).
 - **Parallel:** Multiple `**Task`** calls in the **same assistant turn** when tasks are independent and dependencies allow.
-- **Sequential:** Wait for upstream outputs (notably **security gate → QA → pr-writer → reviewer**).
+- **Sequential:** Wait for upstream outputs: **security-engineer** → **qa-engineer** → **pr-writer-agent** → **reviewer-agent** (after implementation), with **security before QA** always.
 
 For small, single-file requests, you may shorten ceremony but must still honor **guardrails** and **minimal diffs** ([ai-team-orchestration.mdc](.cursor/rules/ai-team-orchestration.mdc)).
 
@@ -212,10 +249,10 @@ For small, single-file requests, you may shorten ceremony but must still honor *
 2. **Approval** — User explicitly approves (or requests changes → back to planner; reject → new plan). See [require-plan-approval.md](.cursor/guardrails/require-plan-approval.md).
 3. **Orchestration** — [orchestration-rules.md](.cursor/rules/orchestration-rules.md), [orchestrator-agent.md](.cursor/agents/orchestrator-agent.md): `**Assigned agent:`**, `**PARALLEL:`** / `**SEQUENTIAL:**`, isolation rules—**only if approved**.
 4. **Implementation workers** — Per task; [execution-rules.md](.cursor/rules/execution-rules.md).
-5. **Security gate** — [security-engineer.md](.cursor/agents/security-engineer.md); **BLOCKED** stops QA until fixed and re-gated.
-6. **QA** — [qa-engineer.md](.cursor/agents/qa-engineer.md) only after **CLEAR**.
+5. **Security gate** — [security-engineer.md](.cursor/agents/security-engineer.md): five-scope audit, severity table, **BLOCKED** stops QA until fixed and re-gated.
+6. **QA** — [qa-engineer.md](.cursor/agents/qa-engineer.md): tests or **Test Coverage Analysis**; only after **CLEAR**.
 7. **PR writing** — [pr-writer-agent.md](.cursor/agents/pr-writer-agent.md).
-8. **Review** — [reviewer-agent.md](.cursor/agents/reviewer-agent.md): **REVIEW RESULT** + **GitHub PR comment**; then repair loop or end.
+8. **Review** — [reviewer-agent.md](.cursor/agents/reviewer-agent.md): five-dimension review, **REVIEW RESULT** + **GitHub PR comment** (Review Summary); then repair loop or end.
 
 ---
 

@@ -53,7 +53,7 @@ Each line is a **separate** subagent run—**not** one shared instance across A+
 
 - **Do not** serialize independent same-role tasks **unless** a dependency, guardrail, or file-ownership rule requires it.
 
-Respect **security-before-QA** and other **phase orders** from [orchestration-rules.md](../rules/orchestration-rules.md)—do not parallelize across those boundaries.
+Respect **phase order** from [orchestration-rules.md](../rules/orchestration-rules.md): **implementation** → **security-engineer** → **qa-engineer** → **pr-writer-agent** → **reviewer-agent**. Do not parallelize across those boundaries; **security-before-QA** is mandatory.
 
 ## Responsibilities
 
@@ -77,7 +77,7 @@ Respect **security-before-QA** and other **phase orders** from [orchestration-ru
 - **`PARALLEL:`** / **`SEQUENTIAL:`** groupings (initial or **delta** for repair)—**only after approval**.
 - Dispatch instructions: which role executes which task, in what order, with what context bundle.
 - For repairs: explicit list of **skipped** (preserved) vs **re-run** tasks.
-- For **`reviewer-agent`**: include **PR URL or number**, base/head branch names, and diff/metadata whenever a PR exists—so the reviewer can **post** feedback to GitHub (see orchestration rules). Sequence **pr-writer** (or draft PR from hooks) **before** final review when the slice uses a PR.
+- For the **post-implementation** tail, dispatch in order: **`security-engineer`** → **`qa-engineer`** → **`pr-writer-agent`** → **`reviewer-agent`**. For **`reviewer-agent`**: include **PR URL or number**, base/head branch names, and diff/metadata whenever a PR exists—so the reviewer can **post** feedback to GitHub. **`pr-writer-agent`** must run **before** **`reviewer-agent`** so the PR narrative exists (hooks may create a draft PR earlier; **pr-writer** still updates title/body per policy).
 
 ## Constraints
 

@@ -16,6 +16,7 @@ Configuration for **planner-agent** behavior. Agent personas live in `.cursor/ag
 - Merge when: separation would force artificial handoffs or duplicate context without benefit.
 - **Data / ML / BI / security:** never combine **pipeline engineering**, **model building**, **BI reporting**, and **security review** in one task—use separate tasks per `.cursor/rules/orchestration-rules.md` isolation table.
 - **QA tasks** must declare a dependency on the **security gate** task for the same slice (security **CLEAR**) before tests execute, per orchestration rules.
+- **Gate phase order** for a slice is fixed in [orchestration-rules.md](orchestration-rules.md): **security-engineer** → **qa-engineer** → **pr-writer-agent** → **reviewer-agent** after implementation—do not imply a different sequence in dependencies unless documenting an exceptional one-off (document why).
 
 ## Skills-first (mandatory)
 

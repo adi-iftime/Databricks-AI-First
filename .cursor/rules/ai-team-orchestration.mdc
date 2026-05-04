@@ -23,7 +23,7 @@ Read the index at [`AGENTS.md`](../../AGENTS.md), then apply the modular config:
 ## Cursor execution
 
 - **Parallel** = multiple `Task` calls in the **same turn** when allowed.
-- **Sequential** = after dependency outputs exist (including **security gate → QA**).
+- **Sequential** = after dependency outputs exist, including the full post-implementation chain: **security-engineer** → **qa-engineer** → **pr-writer-agent** → **reviewer-agent** (never **QA** before security **CLEAR**).
 
 ## Trivial requests
 

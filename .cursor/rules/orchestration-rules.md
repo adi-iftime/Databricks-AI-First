@@ -59,6 +59,13 @@ If intent spans more than one row → **split** into separate tasks in planning;
 
 ## Mandatory execution phases (security gate)
 
+**Decided order** for `security-engineer`, `qa-engineer`, and `reviewer-agent` relative to **`pr-writer-agent`:**
+
+1. **`security-engineer`** first among the three gates (before **QA**).
+2. **`qa-engineer`** second (only after **CLEAR**).
+3. **`pr-writer-agent`** third (PR title/body so the review is not “diff-only”).
+4. **`reviewer-agent`** last (merge-style **REVIEW RESULT** + GitHub comment).
+
 For any feature slice that includes **implementation work** (backend, frontend, data-engineer, data-scientist, or data-analyst deliverables), the orchestrator **must** enforce this **relative order**:
 
 1. **Implementation workers** — all implementation tasks for the slice, respecting their own dependency graph and parallelism rules.
@@ -127,4 +134,4 @@ Respect **repair iteration limits** in `.cursor/guardrails/guardrails.md`.
 - Accept **corrected tasks** or a **subset plan** from the system controller.
 - Maintain a **preserve list** (tasks/files OK as-is) vs **redo list** (must re-execute).
 - Support **parallel** re-dispatch for independent redo tasks.
-- After each repair pass, route back to **pr-writer** (if needed) and **reviewer** until `APPROVED` or iteration cap.
+- After each repair pass, re-run the **post-implementation tail** as needed: **`security-engineer`** (when implementation changed) → **`qa-engineer`** → **`pr-writer`** (if PR text should change) → **`reviewer-agent`** until `APPROVED` or iteration cap.
