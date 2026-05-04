@@ -29,7 +29,9 @@ On **push to `main` or `master`**, **Deploy Databricks bundle** (`.github/workfl
 
 Same **`DATABRICKS_HOST`** + **`DATABRICKS_TOKEN`** secrets as deploy. Adjust **`BRONZE_SEED_DEST`** (and catalog/schema/volume in **`databricks.yml`**) if your Unity Catalog layout differs.
 
-The **bronze volume** and **`cursorfun`** catalog must already exist in the workspace; otherwise the copy step fails—create them once in Databricks before relying on CI.
+Before **`fs cp`**, the workflow runs **`databricks fs mkdir`** on the **parent** of the seed file (e.g. **`…/bronze_ingest/sample`**) so the **`sample`** path prefix exists inside the volume.
+
+The **bronze volume**, catalog, and metastore must allow your principal to write; see **`docs/BRONZE_VOLUME_IAC.md`** for Terraform vs **`mkdir`** behavior.
 
 ## Shape
 
