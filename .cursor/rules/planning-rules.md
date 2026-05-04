@@ -20,7 +20,7 @@ Configuration for **planner-agent** behavior. Agent personas live in `.cursor/ag
 
 ## Skills-first (mandatory)
 
-1. For each task, list **required skills** as references under `.cursor/skills/`: top-level modules like `backend.md`, **or** pack entries like `planning-and-task-breakdown/SKILL.md` (see [`.cursor/skills/README.md`](../skills/README.md)).
+1. For each task, list **required skills** as references to **`.cursor/skills/<name>.md`** files (e.g. `backend.md`, `planning-and-task-breakdown.md`)—see [`.cursor/skills/README.md`](../skills/README.md).
 2. **Do not** emit executing worker names in the planner output; the **orchestrator** assigns agents using `.cursor/rules/orchestration-rules.md`.
 3. If no skill module clearly fits, document **`Skill gap:`** with what is missing and which skill module is closest.
 
