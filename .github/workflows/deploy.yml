@@ -45,5 +45,9 @@ jobs:
         run: |
           set -euo pipefail
           test -f "${BRONZE_SEED_SRC}"
+          # UC fs cp often needs the volume path prefix created first (volume root only — not a `sample/` subfolder).
+          BRONZE_VOLUME_ROOT="$(dirname "${BRONZE_SEED_DEST}")"
+          echo "Ensuring volume path exists: ${BRONZE_VOLUME_ROOT}"
+          databricks fs mkdir "${BRONZE_VOLUME_ROOT}"
           echo "Uploading ${BRONZE_SEED_SRC} -> ${BRONZE_SEED_DEST}"
           databricks fs cp "${BRONZE_SEED_SRC}" "${BRONZE_SEED_DEST}" --overwrite

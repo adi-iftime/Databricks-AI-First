@@ -29,6 +29,8 @@ On **push to `main` or `master`**, **Deploy Databricks bundle** (`.github/workfl
 
 Same **`DATABRICKS_HOST`** + **`DATABRICKS_TOKEN`** secrets as deploy. Adjust **`BRONZE_SEED_DEST`** and **`bronze_source_path`** in **`databricks.yml`** if your Unity Catalog layout differs.
 
+Deploy runs **`databricks fs mkdir`** on the **volume root** (`dirname` of **`BRONZE_SEED_DEST`**) before **`fs cp`**, because **`fs cp`** to a file path inside the volume may fail with *no such directory* until that prefix exists (this is not the old **`sample/`** subpath—only **`…/bronze_ingest`**).
+
 The **bronze volume** and **`cursorfun`** catalog must exist and the token must have **WRITE** on the volume; see **`docs/BRONZE_VOLUME_IAC.md`**.
 
 ## Shape
