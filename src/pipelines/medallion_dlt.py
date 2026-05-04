@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import dlt
 from pyspark.sql import functions as F
-from pyspark.sql.window import Window
 
 # Use schema *hints* (not full `.schema()`) so Auto Loader keeps `_metadata` (Unity Catalog requires
 # `_metadata.file_path` in silver — `input_file_name()` is not supported in UC). Pair hints with
@@ -65,11 +64,26 @@ def silver_events():
         .withColumn("processed_at", F.current_timestamp())
         .select("event_id", "payload", "source_file", "processed_at")
     )
-    window_spec = Window.partitionBy("event_id").orderBy(F.col("processed_at").desc())
+    # ROW_NUMBER() windows are not supported on streaming DataFrames. Use watermark + groupBy + max_by.
+    wm = cleaned.withWatermark("processed_at", "7 days")
     return (
-        cleaned.withColumn("_rn", F.row_number().over(window_spec))
-        .filter(F.col("_rn") == 1)
-        .drop("_rn")
+        wm.groupBy("event_id")
+        .agg(
+            F.max_by(
+                F.struct(
+                    F.col("payload"),
+                    F.col("source_file"),
+                    F.col("processed_at"),
+                ),
+                F.col("processed_at"),
+            ).alias("_picked"),
+        )
+        .select(
+            F.col("event_id"),
+            F.col("_picked.payload").alias("payload"),
+            F.col("_picked.source_file").alias("source_file"),
+            F.col("_picked.processed_at").alias("processed_at"),
+        )
     )
 
 
