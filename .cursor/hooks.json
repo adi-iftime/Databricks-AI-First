@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "hooks": {
+    "postToolUse": [
+      {
+        "command": ".cursor/hooks/ensure-draft-pr.sh",
+        "matcher": "Shell"
+      }
+    ],
+    "afterShellExecution": [
+      {
+        "command": ".cursor/hooks/ensure-draft-pr.sh",
+        "matcher": "git push"
+      }
+    ]
+  }
+}
