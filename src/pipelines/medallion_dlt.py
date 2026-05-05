@@ -3,6 +3,9 @@ Medallion Delta Live Tables pipeline (bronze → silver → gold).
 
 Pipeline bundle sets `configuration` keys consumed via `spark.conf`:
   - `bundle.bronze_source_path` — UC volume path for Auto Loader (see `databricks.yml`).
+
+`_metadata` is a hidden Auto Loader column until selected; bronze must project it so `source_file`
+in silver is populated (see Databricks “File metadata column”).
 """
 
 import dlt
@@ -22,12 +25,14 @@ def _bronze_source_path() -> str:
     table_properties={"quality": "bronze"},
 )
 def bronze_events():
-    return (
+    df = (
         spark.readStream.format("cloudFiles")
         .option("cloudFiles.format", "json")
         .option("cloudFiles.inferColumnTypes", "true")
         .load(_bronze_source_path())
     )
+    # Required: _metadata is hidden unless selected; otherwise it never lands in the bronze Delta table.
+    return df.selectExpr("*", "_metadata")
 
 
 @dlt.table(
