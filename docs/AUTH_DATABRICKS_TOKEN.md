@@ -1,6 +1,6 @@
 # Authentication: Databricks Personal Access Token (CI/CD and local)
 
-This repository uses **Databricks unified authentication** with a **Personal Access Token (PAT)** for GitHub Actions and optional local CLI use. Bundle deployments stay under **`/Shared/.bundle/databricks_ai_first`** (not `/Workspace/Users/<user>`).
+This repository uses **Databricks unified authentication** with a **Personal Access Token (PAT)** for GitHub Actions and optional local CLI use. Bundle deploy roots are **user-scoped** by default: see **`workspace.root_path`** in **`databricks.yml`** (under `/Workspace/Users/<user>/.bundle/...`), not world-writable **`/Workspace/Shared/...`**, unless you change that setting.
 
 ## Required GitHub Actions secrets
 
