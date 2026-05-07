@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="light" style=""><head>
+
+
+<title>Jira și GitHub integration impact</title>
+
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #0a0a0f;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .slide-container {
+            position: relative;
+            width: 1280px;
+            height: 720px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+        }
+        
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1280px;
+            height: 720px;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+        
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1280px;
+            height: 720px;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 2;
+        }
+        
+        .header {
+            position: absolute;
+            top: 40px;
+            left: 90px;
+            width: 1100px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+        
+        .slide-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+        
+        .slide-subtitle {
+            font-size: 18px;
+            color: #94a3b8;
+        }
+        
+        .slide-number {
+            font-size: 14px;
+            color: #64748b;
+            background: rgba(30, 41, 59, 0.8);
+            padding: 8px 16px;
+            border-radius: 20px;
+        }
+        
+        .main-content {
+            position: absolute;
+            top: 130px;
+            left: 90px;
+            width: 1100px;
+            height: 550px;
+            display: flex;
+            gap: 30px;
+            z-index: 10;
+        }
+        
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .panel-header {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .panel-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+        
+        .panel-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        
+        .panel-subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+        
+        .task-table {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 24px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .table-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        
+        .table-stats {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+        
+        .table-row {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+        }
+        
+        .task-id {
+            width: 80px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #3b82f6;
+        }
+        
+        .task-key {
+            width: 120px;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+        
+        .task-status {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .status-done {
+            background: #10b981;
+        }
+        
+        .status-in-progress {
+            background: #f59e0b;
+        }
+        
+        .status-text {
+            font-size: 13px;
+            color: #e2e8f0;
+        }
+        
+        .task-owner {
+            width: 100px;
+            text-align: right;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+        
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .flow-container {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 24px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .flow-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .flow-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        
+        .flow-stages {
+            display: flex;
+            flex-direction: column;
+            gap: 0px;
+            flex: 1;
+            justify-content: space-between;
+        }
+        
+        .flow-stage {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 8px;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+        }
+        
+        .stage-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        
+        .stage-draft {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+        
+        .stage-review {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+        
+        .stage-approve {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+        
+        .stage-merge {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+        }
+        
+        .stage-content {
+            flex: 1;
+        }
+        
+        .stage-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+        
+        .stage-desc {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        
+        .stage-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+        
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+        
+        .flow-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            font-size: 12px;
+            height: 20px;
+        }
+        
+        .integration-summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 20px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .summary-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .summary-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        
+        .summary-text {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+        
+        .summary-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #3b82f6;
+        }
+    </style>
+</head>
+<body style="">
+<div class="slide-container">
+<div class="background-pattern"></div>
+<div class="grid-overlay"></div>
+<div class="header">
+<div>
+<div class="slide-title">Jira și GitHub integration impact</div>
+<div class="slide-subtitle">Trasabilitate completă între plan, cod și livrare</div>
+</div>
+<div class="slide-number">Slide 11/12</div>
+</div>
+<div class="main-content">
+<div class="left-panel">
+<div class="panel-header">
+<div class="panel-icon">
+<i class="fas fa-tasks"></i>
+</div>
+<div>
+<div class="panel-title">Task Management</div>
+<div class="panel-subtitle">Mapping Jira ↔ GitHub</div>
+</div>
+</div>
+<div class="task-table">
+<div class="table-header">
+<div class="table-title">Active Tasks</div>
+<div class="table-stats">12 tasks tracked</div>
+</div>
+<div class="table-row">
+<div class="task-id">SCRUM-25</div>
+<div class="task-key">Databricks User auth</div>
+<div class="task-status">
+
+
+</div>
+<div class="task-owner">@Security Engineer</div>
+</div>
+<div class="table-row">
+<div class="task-id"><meta charset="utf-8"><span style="
+    color: rgb(59, 130, 246);
+    font-family:
+      Inter,
+      -apple-system,
+      'system-ui',
+      'Segoe UI',
+      Roboto,
+      sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-variant-ligatures: normal;
+    font-variant-caps: normal;
+    font-weight: 600;
+    letter-spacing: normal;
+    orphans: 2;
+    text-align: start;
+    text-indent: 0px;
+    text-transform: none;
+    widows: 2;
+    word-spacing: 0px;
+    -webkit-text-stroke-width: 0px;
+    white-space: normal;
+    background-color: rgba(15, 23, 42, 0.4);
+    text-decoration-thickness: initial;
+    text-decoration-style: initial;
+    text-decoration-color: initial;
+    display: inline !important;
+    float: none;
+  ">SCRUM-26</span></div>
+<div class="task-key">Bundle Project Structure</div>
+<div class="task-status">
+
+
+</div>
+<div class="task-owner">@DevOps</div>
+</div>
+<div class="table-row">
+<div class="task-id"><meta charset="utf-8"><span style="
+    color: rgb(59, 130, 246);
+    font-family:
+      Inter,
+      -apple-system,
+      'system-ui',
+      'Segoe UI',
+      Roboto,
+      sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-variant-ligatures: normal;
+    font-variant-caps: normal;
+    font-weight: 600;
+    letter-spacing: normal;
+    orphans: 2;
+    text-align: start;
+    text-indent: 0px;
+    text-transform: none;
+    widows: 2;
+    word-spacing: 0px;
+    -webkit-text-stroke-width: 0px;
+    white-space: normal;
+    background-color: rgba(15, 23, 42, 0.4);
+    text-decoration-thickness: initial;
+    text-decoration-style: initial;
+    text-decoration-color: initial;
+    display: inline !important;
+    float: none;
+  ">SCRUM-28</span></div>
+<div class="task-key">Bronze Layer</div>
+<div class="task-status">
+
+
+</div>
+<div class="task-owner">@Data Engineer</div>
+</div>
+<div class="table-row">
+<div class="task-id"><meta charset="utf-8"><span style="
+    color: rgb(59, 130, 246);
+    font-family:
+      Inter,
+      -apple-system,
+      'system-ui',
+      'Segoe UI',
+      Roboto,
+      sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-variant-ligatures: normal;
+    font-variant-caps: normal;
+    font-weight: 600;
+    letter-spacing: normal;
+    orphans: 2;
+    text-align: start;
+    text-indent: 0px;
+    text-transform: none;
+    widows: 2;
+    word-spacing: 0px;
+    -webkit-text-stroke-width: 0px;
+    white-space: normal;
+    background-color: rgba(15, 23, 42, 0.4);
+    text-decoration-thickness: initial;
+    text-decoration-style: initial;
+    text-decoration-color: initial;
+    display: inline !important;
+    float: none;
+  ">SCRUM-34</span></div>
+<div class="task-key">Validation and test evidence</div>
+<div class="task-status">
+
+
+</div>
+<div class="task-owner">@QA Engineer</div>
+</div>
+<div class="table-row">
+<div class="task-id"><meta charset="utf-8"><span style="
+    color: rgb(59, 130, 246);
+    font-family:
+      Inter,
+      -apple-system,
+      'system-ui',
+      'Segoe UI',
+      Roboto,
+      sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-variant-ligatures: normal;
+    font-variant-caps: normal;
+    font-weight: 600;
+    letter-spacing: normal;
+    orphans: 2;
+    text-align: start;
+    text-indent: 0px;
+    text-transform: none;
+    widows: 2;
+    word-spacing: 0px;
+    -webkit-text-stroke-width: 0px;
+    white-space: normal;
+    background-color: rgba(15, 23, 42, 0.4);
+    text-decoration-thickness: initial;
+    text-decoration-style: initial;
+    text-decoration-color: initial;
+    display: inline !important;
+    float: none;
+  ">SCRUM-36</span></div>
+<div class="task-key">Final Code Review</div>
+<div class="task-status">
+
+
+</div>
+<div class="task-owner">@PR Reviewer</div>
+</div>
+</div>
+</div>
+<div class="right-panel">
+<div class="flow-container">
+<div class="flow-header">
+<div class="flow-title">PR Lifecycle Flow</div>
+<div class="table-stats">5 stages</div>
+</div>
+<div class="flow-stages">
+<div class="flow-stage">
+<div class="stage-icon stage-draft">
+<i class="fas fa-code-branch"></i>
+</div>
+<div class="stage-content">
+<div class="stage-title">Draft PR</div>
+<div class="stage-desc">Initial code push with description</div>
+</div>
+<div class="stage-status status-active">Active</div>
+</div>
+<div class="flow-arrow">
+<i class="fas fa-arrow-down"></i>
+</div>
+<div class="flow-stage">
+<div class="stage-icon stage-review">
+<i class="fas fa-eye"></i>
+</div>
+<div class="stage-content">
+<div class="stage-title">Review</div>
+<div class="stage-desc">Code review and feedback</div>
+</div>
+<div class="stage-status status-active">In Review</div>
+</div>
+<div class="flow-arrow">
+<i class="fas fa-arrow-down"></i>
+</div>
+<div class="flow-stage">
+<div class="stage-icon stage-approve">
+<i class="fas fa-check"></i>
+</div>
+<div class="stage-content">
+<div class="stage-title">Approvals</div>
+<div class="stage-desc">Required approvals from team</div>
+</div>
+<div class="stage-status status-pending">Pending</div>
+</div>
+<div class="flow-arrow">
+<i class="fas fa-arrow-down"></i>
+</div>
+<div class="flow-stage">
+<div class="stage-icon stage-merge">
+<i class="fas fa-code-merge"></i>
+</div>
+<div class="stage-content">
+<div class="stage-title">Merge</div>
+<div class="stage-desc">Integration into main branch</div>
+</div>
+<div class="stage-status status-pending">Ready</div>
+</div>
+</div>
+</div>
+<div class="integration-summary">
+<div class="summary-item">
+<div class="summary-icon" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">
+<i class="fas fa-check-circle"></i>
+</div>
+<div>
+<div class="summary-text">Backlog</div>
+<div class="summary-value">Persistent</div>
+</div>
+</div>
+<div class="summary-item">
+<div class="summary-icon" style="background: rgba(59, 130, 246, 0.2); color: #3b82f6;">
+<i class="fas fa-history"></i>
+</div>
+<div>
+<div class="summary-text">Audit</div>
+<div class="summary-value">Complete</div>
+</div>
+</div>
+<div class="summary-item">
+<div class="summary-icon" style="background: rgba(139, 92, 246, 0.2); color: #8b5cf6;">
+<i class="fas fa-link"></i>
+</div>
+<div>
+<div class="summary-text">Trace</div>
+<div class="summary-value">100%</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</body></html>

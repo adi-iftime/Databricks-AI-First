@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="light" style=""><head>
+
+
+<title>Iterația 1: prompt vag, haos</title>
+
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #0a0a0f;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .slide-container {
+            position: relative;
+            width: 1280px;
+            height: 720px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+        }
+        
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1280px;
+            height: 720px;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(239, 68, 68, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+        
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1280px;
+            height: 720px;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 2;
+        }
+        
+        .header {
+            position: absolute;
+            top: 40px;
+            left: 90px;
+            width: 1100px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 10;
+        }
+        
+        .slide-title {
+            font-size: 42px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 12px;
+        }
+        
+        .slide-subtitle {
+            font-size: 20px;
+            color: #94a3b8;
+        }
+        
+        .slide-number {
+            font-size: 14px;
+            color: #64748b;
+            background: rgba(30, 41, 59, 0.8);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-top: 10px;
+        }
+        
+        .main-content {
+            position: absolute;
+            top: 145px;
+            left: 90px;
+            width: 1100px;
+            height: 500px;
+            display: flex;
+            gap: 40px;
+            z-index: 10;
+        }
+        
+        .left-panel {
+            width: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .key-message {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 16px;
+            padding: 32px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .message-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(239, 68, 68, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ef4444;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+        
+        .message-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        
+        .message-text {
+            font-size: 18px;
+            color: #cbd5e1;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+        
+        .problem-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            flex-grow: 1;
+        }
+        
+        .problem-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .problem-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(239, 68, 68, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ef4444;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        
+        .problem-content {
+            flex: 1;
+        }
+        
+        .problem-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 2px;
+        }
+        
+        .problem-desc {
+            font-size: 14px;
+            color: #94a3b8;
+            line-height: 1.4;
+        }
+        
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .visualization-container {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 32px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .viz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .viz-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        
+        .viz-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #ef4444;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.5; }
+        }
+        
+        .network-graph {
+            flex: 1;
+            position: relative;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+        
+        .node {
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 12px;
+            color: #ffffff;
+            border: 2px solid;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        }
+        
+        .node-uncertain {
+            background: rgba(239, 68, 68, 0.25);
+            border-color: #ef4444;
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        .node-question {
+            background: rgba(245, 158, 11, 0.25);
+            border-color: #f59e0b;
+            animation: float 5s ease-in-out infinite reverse;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        .node-icon {
+            font-size: 24px;
+            margin-bottom: 6px;
+        }
+        
+        .node-label {
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .connection-line {
+            position: absolute;
+            height: 2px;
+            background: rgba(239, 68, 68, 0.4);
+            transform-origin: left center;
+        }
+        
+        .connection-dashed {
+            background: repeating-linear-gradient(
+                90deg,
+                rgba(239, 68, 68, 0.4),
+                rgba(239, 68, 68, 0.4) 10px,
+                transparent 10px,
+                transparent 18px
+            );
+        }
+        
+        .legend {
+            display: flex;
+            gap: 24px;
+            margin-top: 24px;
+            padding: 16px 20px;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 12px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+        
+        .legend-color {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        .legend-red { background: #ef4444; }
+        .legend-yellow { background: #f59e0b; }
+        
+        .bottom-section {
+            position: absolute;
+            top: 660px;
+            left: 90px;
+            width: 1100px;
+            z-index: 10;
+        }
+        
+        .lesson-text {
+            font-size: 16px;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(59, 130, 246, 0.1);
+            padding: 10px 20px;
+            border-radius: 30px;
+            width: fit-content;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .lesson-text i {
+            color: #3b82f6;
+        }
+        
+        .lesson-highlight {
+            color: #3b82f6;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body style="">
+<div class="slide-container">
+<div class="background-pattern"></div>
+<div class="grid-overlay"></div>
+<div class="header">
+<div data-object-type="textbox">
+<div class="slide-title">Iterația 1: prompt vag, haos</div>
+<div class="slide-subtitle">Prima versiune părea promițătoare, dar nu avea contracte clare între agenți</div>
+</div>
+<div class="slide-number">Slide 3/12</div>
+</div>
+<div class="main-content">
+<div class="left-panel">
+<div class="key-message" data-object-type="textbox">
+<div class="message-header">
+<div class="message-icon">
+<i class="fas fa-exclamation-triangle"></i>
+</div>
+<div class="message-title">Prompt generic = sistem inconsistent</div>
+</div>
+<div class="message-text">
+                    Prima versiune a sistemului AI a fost construită pe un prompt vag care nu specifica clar responsabilitățile și interacțiunile între agenți.
+                </div>
+<div class="problem-list">
+<div class="problem-item">
+<div class="problem-icon"><i class="fas fa-user-times"></i></div>
+<div class="problem-content">
+<div class="problem-title">Roluri neclare</div>
+<div class="problem-desc">Agenții nu știau exact ce responsabilități au și cui să raporteze</div>
+</div>
+</div>
+<div class="problem-item">
+<div class="problem-icon"><i class="fas fa-puzzle-piece"></i></div>
+<div class="problem-content">
+<div class="problem-title">Skill-uri nealiniate</div>
+<div class="problem-desc">Capabilitățile agenților nu erau potrivite pentru task-uri</div>
+</div>
+</div>
+<div class="problem-item">
+<div class="problem-icon"><i class="fas fa-random"></i></div>
+<div class="problem-content">
+<div class="problem-title">Rezultate greu de folosit</div>
+<div class="problem-desc">Output-urile erau inconsistente și dificil de integrat</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="right-panel">
+<div class="visualization-container" data-object-type="textbox">
+<div class="viz-header">
+<div class="viz-title">Arhitectură haotică</div>
+<div class="viz-status">
+<div class="status-dot"></div>
+<span>Sistem inconsistent</span>
+</div>
+</div>
+<div class="network-graph">
+<div class="node node-uncertain" style="left: 60px; top: 40px;">
+<div class="node-icon"><i class="fas fa-question"></i></div>
+<div class="node-label">Developer</div>
+</div>
+<div class="node node-question" style="left: 200px; top: 160px;">
+<div class="node-icon"><i class="fas fa-question"></i></div>
+<div class="node-label">Python code?</div>
+</div>
+<div class="node node-uncertain" style="left: 360px; top: 70px;">
+<div class="node-icon"><i class="fas fa-question"></i></div>
+<div class="node-label">Data Engineer?</div>
+</div>
+
+<div class="connection-line" style="left: 145px; top: 90px; width: 65px; transform: rotate(50deg);"></div>
+
+<div class="connection-line connection-dashed" style="left: 285px; top: 185px; width: 85px; transform: rotate(-35deg);"></div>
+</div>
+<div class="legend">
+<div class="legend-item">
+<div class="legend-color legend-red"></div>
+<span>Roluri neclare</span>
+</div>
+<div class="legend-item">
+<div class="legend-color legend-yellow"></div>
+<span>Skill-uri nealiniate</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bottom-section" data-object-type="textbox">
+<div class="lesson-text">
+<i class="fas fa-lightbulb"></i>
+<span>Lecția: <span class="lesson-highlight">Agentic design cere specificații stricte, nu doar intenție</span></span>
+</div>
+</div>
+</div>
+
+</body></html>
