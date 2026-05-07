@@ -1,61 +1,130 @@
 <!DOCTYPE html>
-<html lang="ro">
+<html lang="ro" data-theme="light" style="">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=1280, height=720">
-  <title>PR Reviewer Comment Before Fix</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body {
-      width: 1280px;
-      height: 720px;
-      overflow: hidden;
-      background: #0a0a0f;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-    .slide-container {
-      width: 1280px;
-      height: 720px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      padding: 20px 36px 28px;
-      gap: 14px;
-    }
-    h1 {
-      flex: 0 0 auto;
-      max-width: 100%;
-      font-size: 26px;
-      font-weight: 600;
-      color: #e2e8f0;
-      text-align: center;
-      line-height: 1.25;
-    }
-    .figure-wrap {
-      flex: 1 1 auto;
-      min-height: 0;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    img {
-      max-width: 100%;
-      max-height: 100%;
-      width: auto;
-      height: auto;
-      object-fit: contain;
-      display: block;
-    }
-  </style>
+<meta charset="utf-8">
+<title>Git Pull Requests</title>
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #0a0a0f;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 1280px;
+            height: 720px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+        }
+
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1280px;
+            height: 720px;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1280px;
+            height: 720px;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 2;
+        }
+
+        .header {
+            position: absolute;
+            top: 40px;
+            left: 90px;
+            width: 1100px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 10;
+        }
+
+        .slide-title {
+            font-size: 38px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .slide-subtitle {
+            font-size: 20px;
+            color: #94a3b8;
+            min-height: 0;
+        }
+
+        .slide-subtitle:empty {
+            display: none;
+        }
+
+        .slide-number {
+            font-size: 14px;
+            color: #64748b;
+            background: rgba(30, 41, 59, 0.8);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-top: 10px;
+            flex-shrink: 0;
+        }
+
+        .main-content {
+            position: absolute;
+            top: 105px;
+            left: 32px;
+            width: 1216px;
+            height: 598px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            padding: 0;
+        }
+
+        .main-content img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            display: block;
+        }
+</style>
 </head>
-<body>
-  <div class="slide-container">
-    <h1>PR Reviewer Comment Before Fix</h1>
-    <div class="figure-wrap">
-      <img src="../images/PR%20Reviewer%20Comment%20Before%20Fix.png" alt="PR Reviewer Comment Before Fix">
-    </div>
-  </div>
-</body>
-</html>
+<body style="">
+<div class="slide-container">
+<div class="background-pattern"></div>
+<div class="grid-overlay"></div>
+<div class="header">
+<div data-object-type="textbox">
+<div class="slide-title">Git Pull Requests</div>
+<div class="slide-subtitle"></div>
+</div>
+<div class="slide-number">Slide 17/21</div>
+</div>
+<div class="main-content">
+<img src="../images/Git%20pull%20Requests.png" alt="Git Pull Requests">
+</div>
+</div>
+</body></html>
