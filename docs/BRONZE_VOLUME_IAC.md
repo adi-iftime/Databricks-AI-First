@@ -12,6 +12,8 @@ Optional **subfolders** (e.g. **`sample/`**) are path prefixes inside storage. I
 
 **Deploy** runs **`databricks fs mkdir`** on the **volume root** (`…/bronze_ingest`) before **`fs cp`** to **`ci_seed.jsonl`**, because **`fs cp`** can fail with *no such directory* until that path prefix exists—without recreating a **`sample/`** subdirectory.
 
+Seed destinations are derived from **`databricks.yml`** by **`scripts/resolve_bronze_seed_dests.py`** (see **Deploy Databricks bundle** workflow) so CI stays aligned when you change **`variables.bronze_source_path`** or a target override.
+
 ## Local / manual
 
 The **Databricks CLI** requires the **`dbfs:`** scheme for UC volume paths (`dbfs:/Volumes/...`). Spark and **`bundle.bronze_source_path`** keep the **`/Volumes/...`** form without **`dbfs:`**.
@@ -60,7 +62,7 @@ resource "databricks_volume" "bronze_ingest" {
 
 ## Summary
 
-| Concern | IaC (Terraform) | CLI / CI |
-|--------|-----------------|----------|
-| Catalog / schema / **volume** | Yes (`databricks_volume`, etc.) | Catalog UI |
-| Subpaths inside volume | No dedicated resource | **`databricks fs mkdir`** or upload at volume root |
+| Concern                       | IaC (Terraform)                  | CLI / CI                                            |
+| ----------------------------- | -------------------------------- | --------------------------------------------------- |
+| Catalog / schema / **volume** | Yes (`databricks_volume`, etc.) | Catalog UI                                          |
+| Subpaths inside volume        | No dedicated resource            | **`databricks fs mkdir`** or upload at volume root |

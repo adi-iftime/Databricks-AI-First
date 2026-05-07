@@ -221,7 +221,7 @@ Files under `[.cursor/commands/](.cursor/commands/)` define **slash-style** work
 
 ## Skills catalog
 
-This section mirrors `**[.cursor/skills/README.md](.cursor/skills/README.md)**` so `**AGENTS.md**` stays a single entrypoint. Skills are **flat files**: `**.cursor/skills/<name>.md`**.
+This section mirrors **[.cursor/skills/README.md](.cursor/skills/README.md)** so **`AGENTS.md`** stays a single entrypoint. Skills are **flat files**: `.cursor/skills/<name>.md`.
 
 ```
   DEFINE          PLAN           BUILD          VERIFY         REVIEW          SHIP

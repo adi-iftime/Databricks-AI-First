@@ -4,9 +4,9 @@ This repository uses **Databricks unified authentication** with a **Personal Acc
 
 ## Required GitHub Actions secrets
 
-| Secret | Purpose |
-| ------ | ------- |
-| `DATABRICKS_HOST` | Workspace URL, e.g. `https://adb-xxxxxxxx.azuredatabricks.net` (no trailing slash) |
+| Secret             | Purpose                                                                                                               |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| `DATABRICKS_HOST`  | Workspace URL, e.g. `https://adb-xxxxxxxx.azuredatabricks.net` (no trailing slash)                                    |
 | `DATABRICKS_TOKEN` | PAT for a workspace user (or dedicated automation account) with permission to run `bundle validate` / `bundle deploy` |
 
 Workflows export these as environment variables. The Databricks CLI picks them up automatically; **do not** set `databricks auth login` or alternate auth types in YAML.
@@ -30,7 +30,7 @@ Optional: use a **`~/.databrickscfg`** profile with `host` + `token` instead of 
 
 ## Host must match the bundle file
 
-`databricks bundle validate` uses **`workspace.host` from `databricks.yml`**. That literal URL must match **`DATABRICKS_HOST`** (same workspace). Replace any placeholder host in the repo before CI will pass remote validation.
+`databricks bundle validate` uses **`workspace.host`** from **`databricks.yml`**. That literal URL must match **`DATABRICKS_HOST`** (same workspace). Replace any placeholder host in the repo before CI will pass remote validation.
 
 ## Security hygiene
 

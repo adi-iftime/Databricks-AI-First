@@ -6,6 +6,13 @@ Pipeline bundle sets `configuration` keys consumed via `spark.conf`:
 
 `_metadata` is a hidden Auto Loader column until selected; bronze must project it so `source_file`
 in silver is populated (see Databricks “File metadata column”).
+
+Silver `dropDuplicates(["event_id"])` assumes **idempotent `event_id` values** (each ID appears at most once
+across the stream, or repeats are true duplicates to collapse). If your domain allows the same `event_id`
+for distinct deliveries over time, replace this with an explicit merge/watermark strategy.
+
+Gold daily buckets use `to_date(processed_at)`, which follows the Spark session timezone for midnight
+boundaries—align `spark.sql.session.timeZone` with your KPI convention if needed.
 """
 
 import dlt
@@ -24,6 +31,7 @@ def _bronze_source_path() -> str:
     comment="Raw events ingested from JSON files in the bronze volume",
     table_properties={"quality": "bronze"},
 )
+@dlt.expect("valid_json", "_rescued_data IS NULL")
 def bronze_events():
     df = (
         spark.readStream.format("cloudFiles")
@@ -32,7 +40,7 @@ def bronze_events():
         .load(_bronze_source_path())
     )
     # Required: _metadata is hidden unless selected; otherwise it never lands in the bronze Delta table.
-    return df.selectExpr("*", "_metadata")
+    return df.selectExpr("*", "_metadata").withColumn("ingested_at", F.current_timestamp())
 
 
 @dlt.table(
@@ -52,6 +60,8 @@ def silver_events():
         .withColumn("payload", F.col("payload"))
         .withColumn("source_file", source_file)
         .withColumn("processed_at", F.current_timestamp())
+        # Idempotent event_id only — see module docstring.
+        .dropDuplicates(["event_id"])
         .select("event_id", "payload", "source_file", "processed_at")
     )
     return cleaned
@@ -63,7 +73,11 @@ def silver_events():
 )
 def gold_daily_event_counts():
     df = dlt.read("silver_events")
-    return df.groupBy(F.date_trunc("day", F.col("processed_at")).alias("event_date")).agg(
-        F.count("*").alias("event_count"),
-        F.countDistinct("event_id").alias("unique_events"),
+    # Calendar date in session timezone — see module docstring.
+    return (
+        df.groupBy(F.to_date("processed_at").alias("event_date"))
+        .agg(
+            F.count("*").alias("event_count"),
+            F.countDistinct("event_id").alias("unique_events"),
+        )
     )

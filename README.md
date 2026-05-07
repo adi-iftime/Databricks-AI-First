@@ -81,7 +81,7 @@ Do this if you provision **Databricks workspace**, **access connector**, and **A
 1. **CI validate** — On every push/PR to `main`/`master`, **Validate Databricks bundle** runs **pytest** and, when secrets are available, `databricks bundle validate`.
 2. **CI deploy** — On push to `main`/`master`, **Deploy Databricks bundle**:
   - Runs `databricks bundle deploy` for target `dev` (or `workflow_dispatch` input).
-  - Uploads the JSONL fixture to the bronze volume path (`BRONZE_SEED_DEST` in the workflow). Ensure that path matches your volume and `bundle.bronze_source_path` / pipeline configuration.
+  - Uploads JSONL fixtures under **`bundle.bronze_source_path`**; destinations are computed from **`databricks.yml`** by **`scripts/resolve_bronze_seed_dests.py`** (same defaults as the pipeline). For non-`/Volumes/...` bronze paths, extend or replace that script.
 3. **Manual deploy** — You can run **Deploy Databricks bundle** from the Actions tab and choose target `dev` or `prod`.
 4. **Local deploy** (optional):
 
