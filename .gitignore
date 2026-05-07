@@ -24,6 +24,9 @@ infra/terraform/*.tfvars
 !infra/terraform/terraform.tfvars.example
 infra/terraform/crash.log
 
+# Local presentation assets (not versioned)
+prezentare/
+
 # Editor and OS artifacts
 .DS_Store
 .idea/

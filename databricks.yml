@@ -21,7 +21,9 @@ variables:
     default: cursorfun
   bronze_source_path:
     description: Unity Catalog volume or cloud path where raw JSON files land for Auto Loader
-    default: /Volumes/cursorfun/default/bronze_ingest
+    default: abfss://bronze-raw@stcursorfundevne.dfs.core.windows.net/events/
+  bronze_schema_path:
+    default: abfss://bronze-raw@stcursorfundevne.dfs.core.windows.net/_schemas/
 
 resources:
   pipelines:
@@ -34,6 +36,7 @@ resources:
       configuration:
         bundle.catalog: ${var.catalog}
         bundle.bronze_source_path: ${var.bronze_source_path}
+        bundle.bronze_schema_path: ${var.bronze_schema_path}
         spark.databricks.delta.schema.autoMerge.enabled: "true"
       libraries:
         - file:

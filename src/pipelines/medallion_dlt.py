@@ -18,21 +18,24 @@ def _bronze_source_path() -> str:
         "/Volumes/cursorfun/default/bronze_ingest",
     )
     return raw if raw.endswith("/") else f"{raw}/"
-
+def _bronze_schema_path() -> str:
+    return spark.conf.get("bundle.bronze_schema_path", "/tmp/schemas")
 
 @dlt.table(
     comment="Raw events ingested from JSON files in the bronze volume",
     table_properties={"quality": "bronze"},
 )
+@dlt.expect("valid_json", "_rescued_data IS NULL")
 def bronze_events():
     df = (
         spark.readStream.format("cloudFiles")
         .option("cloudFiles.format", "json")
         .option("cloudFiles.inferColumnTypes", "true")
+        .option("cloudFiles.schemaLocation", _bronze_schema_path())
         .load(_bronze_source_path())
     )
     # Required: _metadata is hidden unless selected; otherwise it never lands in the bronze Delta table.
-    return df.selectExpr("*", "_metadata")
+    return df.selectExpr("*", "_metadata").withColumn("ingested_at", F.current_timestamp())
 
 
 @dlt.table(
@@ -52,6 +55,7 @@ def silver_events():
         .withColumn("payload", F.col("payload"))
         .withColumn("source_file", source_file)
         .withColumn("processed_at", F.current_timestamp())
+        .dropDuplicates(["event_id"])
         .select("event_id", "payload", "source_file", "processed_at")
     )
     return cleaned
@@ -63,7 +67,10 @@ def silver_events():
 )
 def gold_daily_event_counts():
     df = dlt.read("silver_events")
-    return df.groupBy(F.date_trunc("day", F.col("processed_at")).alias("event_date")).agg(
-        F.count("*").alias("event_count"),
-        F.countDistinct("event_id").alias("unique_events"),
+    return (
+        df.groupBy(F.to_date("processed_at").alias("event_date"))
+        .agg(
+            F.count("*").alias("event_count"),
+            F.countDistinct("event_id").alias("unique_events"),
+        )
     )
