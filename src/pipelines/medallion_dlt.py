@@ -6,6 +6,13 @@ Pipeline bundle sets `configuration` keys consumed via `spark.conf`:
 
 `_metadata` is a hidden Auto Loader column until selected; bronze must project it so `source_file`
 in silver is populated (see Databricks “File metadata column”).
+
+Silver `dropDuplicates(["event_id"])` assumes **idempotent `event_id` values** (each ID appears at most once
+across the stream, or repeats are true duplicates to collapse). If your domain allows the same `event_id`
+for distinct deliveries over time, replace this with an explicit merge/watermark strategy.
+
+Gold daily buckets use `to_date(processed_at)`, which follows the Spark session timezone for midnight
+boundaries—align `spark.sql.session.timeZone` with your KPI convention if needed.
 """
 
 import dlt
@@ -53,6 +60,7 @@ def silver_events():
         .withColumn("payload", F.col("payload"))
         .withColumn("source_file", source_file)
         .withColumn("processed_at", F.current_timestamp())
+        # Idempotent event_id only — see module docstring.
         .dropDuplicates(["event_id"])
         .select("event_id", "payload", "source_file", "processed_at")
     )
@@ -65,6 +73,7 @@ def silver_events():
 )
 def gold_daily_event_counts():
     df = dlt.read("silver_events")
+    # Calendar date in session timezone — see module docstring.
     return (
         df.groupBy(F.to_date("processed_at").alias("event_date"))
         .agg(

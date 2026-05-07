@@ -2,19 +2,21 @@
 
 ## Paths in this repo
 
-The bundle default `**bundle.bronze_source_path**` is the **volume root**:
+The bundle default **`bundle.bronze_source_path`** is the **volume root**:
 
 `/Volumes/<catalog>/<schema>/<volume_name>/`
 
-Auto Loader reads JSON files anywhere under that path (for example `**ci_seed.jsonl`** uploaded by deploy). No `**sample/`** subfolder is required.
+Auto Loader reads JSON files anywhere under that path (for example **`ci_seed.jsonl`** uploaded by deploy). No **`sample/`** subfolder is required.
 
-Optional **subfolders** (e.g. `**sample/`**) are path prefixes inside storage. If you use them, create with `**databricks fs mkdir`** before `**fs cp**`, or upload via the Catalog UI.
+Optional **subfolders** (e.g. **`sample/`**) are path prefixes inside storage. If you use them, create with **`databricks fs mkdir`** before **`fs cp`**, or upload via the Catalog UI.
 
-**Deploy** runs `**databricks fs mkdir`** on the **volume root** (`…/bronze_ingest`) before `**fs cp`** to `**ci_seed.jsonl`**, because `**fs cp`** can fail with *no such directory* until that path prefix exists—without recreating a `**sample/*`* subdirectory.
+**Deploy** runs **`databricks fs mkdir`** on the **volume root** (`…/bronze_ingest`) before **`fs cp`** to **`ci_seed.jsonl`**, because **`fs cp`** can fail with *no such directory* until that path prefix exists—without recreating a **`sample/`** subdirectory.
+
+Seed destinations are derived from **`databricks.yml`** by **`scripts/resolve_bronze_seed_dests.py`** (see **Deploy Databricks bundle** workflow) so CI stays aligned when you change **`variables.bronze_source_path`** or a target override.
 
 ## Local / manual
 
-The **Databricks CLI** requires the `**dbfs:`** scheme for UC volume paths (`dbfs:/Volumes/...`). Spark and `**bundle.bronze_source_path*`* keep the `**/Volumes/...`** form without `**dbfs:**`.
+The **Databricks CLI** requires the **`dbfs:`** scheme for UC volume paths (`dbfs:/Volumes/...`). Spark and **`bundle.bronze_source_path`** keep the **`/Volumes/...`** form without **`dbfs:`**.
 
 ```bash
 databricks fs mkdir "dbfs:/Volumes/cursorfun/default/bronze_ingest"
@@ -60,10 +62,7 @@ resource "databricks_volume" "bronze_ingest" {
 
 ## Summary
 
-
-| Concern                       | IaC (Terraform)                 | CLI / CI                                           |
-| ----------------------------- | ------------------------------- | -------------------------------------------------- |
-| Catalog / schema / **volume** | Yes (`databricks_volume`, etc.) | Catalog UI                                         |
-| Subpaths inside volume        | No dedicated resource           | `**databricks fs mkdir`** or upload at volume root |
-
-
+| Concern                       | IaC (Terraform)                  | CLI / CI                                            |
+| ----------------------------- | -------------------------------- | --------------------------------------------------- |
+| Catalog / schema / **volume** | Yes (`databricks_volume`, etc.) | Catalog UI                                          |
+| Subpaths inside volume        | No dedicated resource            | **`databricks fs mkdir`** or upload at volume root |

@@ -17,15 +17,21 @@ jobs:
       DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
       DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
       BUNDLE_TARGET: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target || 'dev' }}
-      # Must match default bundle.bronze_source_path in databricks.yml (directory Auto Loader reads).
       BRONZE_SEED_SRC: fixtures/bronze_ingest_sample.jsonl
       BRONZE_SEED_500_SRC: fixtures/bronze_ingest_sample_500.jsonl
-      # CLI requires `dbfs:` before /Volumes/... (see Databricks "Manage files in volumes" — without it, mkdir can hit the *local* /Volumes and fail).
-      # Spark / bundle.bronze_source_path stay as `/Volumes/...` (no dbfs:).
-      BRONZE_SEED_DEST: dbfs:/Volumes/cursorfun/default/bronze_ingest/ci_seed.jsonl
-      BRONZE_SEED_500_DEST: dbfs:/Volumes/cursorfun/default/bronze_ingest/ci_seed_500.jsonl
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PyYAML (resolve bronze paths from bundle)
+        run: pip install "pyyaml>=6.0.1"
+
+      - name: Resolve bronze seed destinations from databricks.yml
+        id: bronze_seeds
+        run: python3 scripts/resolve_bronze_seed_dests.py
 
       - uses: databricks/setup-cli@main
 
@@ -45,10 +51,15 @@ jobs:
         run: databricks bundle deploy -t "${BUNDLE_TARGET}" --auto-approve
 
       - name: Seed bronze volume (JSONL fixtures)
+        env:
+          BRONZE_SEED_DEST: ${{ steps.bronze_seeds.outputs.bronze_seed_dest }}
+          BRONZE_SEED_500_DEST: ${{ steps.bronze_seeds.outputs.bronze_seed_500_dest }}
         run: |
           set -euo pipefail
           test -f "${BRONZE_SEED_SRC}"
           test -f "${BRONZE_SEED_500_SRC}"
+          test -n "${BRONZE_SEED_DEST}"
+          test -n "${BRONZE_SEED_500_DEST}"
           # UC fs cp often needs the volume path prefix created first (volume root only — not a `sample/` subfolder).
           BRONZE_VOLUME_ROOT="$(dirname "${BRONZE_SEED_DEST}")"
           echo "Ensuring volume path exists: ${BRONZE_VOLUME_ROOT}"
