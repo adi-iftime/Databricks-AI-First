@@ -19,9 +19,11 @@ jobs:
       BUNDLE_TARGET: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target || 'dev' }}
       # Must match default bundle.bronze_source_path in databricks.yml (directory Auto Loader reads).
       BRONZE_SEED_SRC: fixtures/bronze_ingest_sample.jsonl
+      BRONZE_SEED_500_SRC: fixtures/bronze_ingest_sample_500.jsonl
       # CLI requires `dbfs:` before /Volumes/... (see Databricks "Manage files in volumes" — without it, mkdir can hit the *local* /Volumes and fail).
       # Spark / bundle.bronze_source_path stay as `/Volumes/...` (no dbfs:).
       BRONZE_SEED_DEST: dbfs:/Volumes/cursorfun/default/bronze_ingest/ci_seed.jsonl
+      BRONZE_SEED_500_DEST: dbfs:/Volumes/cursorfun/default/bronze_ingest/ci_seed_500.jsonl
     steps:
       - uses: actions/checkout@v4
 
@@ -42,13 +44,16 @@ jobs:
       - name: databricks bundle deploy
         run: databricks bundle deploy -t "${BUNDLE_TARGET}" --auto-approve
 
-      - name: Seed bronze volume (JSONL fixture)
+      - name: Seed bronze volume (JSONL fixtures)
         run: |
           set -euo pipefail
           test -f "${BRONZE_SEED_SRC}"
+          test -f "${BRONZE_SEED_500_SRC}"
           # UC fs cp often needs the volume path prefix created first (volume root only — not a `sample/` subfolder).
           BRONZE_VOLUME_ROOT="$(dirname "${BRONZE_SEED_DEST}")"
           echo "Ensuring volume path exists: ${BRONZE_VOLUME_ROOT}"
           databricks fs mkdir "${BRONZE_VOLUME_ROOT}"
           echo "Uploading ${BRONZE_SEED_SRC} -> ${BRONZE_SEED_DEST}"
           databricks fs cp "${BRONZE_SEED_SRC}" "${BRONZE_SEED_DEST}" --overwrite
+          echo "Uploading ${BRONZE_SEED_500_SRC} -> ${BRONZE_SEED_500_DEST}"
+          databricks fs cp "${BRONZE_SEED_500_SRC}" "${BRONZE_SEED_500_DEST}" --overwrite

@@ -18,8 +18,7 @@ def _bronze_source_path() -> str:
         "/Volumes/cursorfun/default/bronze_ingest",
     )
     return raw if raw.endswith("/") else f"{raw}/"
-def _bronze_schema_path() -> str:
-    return spark.conf.get("bundle.bronze_schema_path", "/tmp/schemas")
+
 
 @dlt.table(
     comment="Raw events ingested from JSON files in the bronze volume",
@@ -31,7 +30,6 @@ def bronze_events():
         spark.readStream.format("cloudFiles")
         .option("cloudFiles.format", "json")
         .option("cloudFiles.inferColumnTypes", "true")
-        .option("cloudFiles.schemaLocation", _bronze_schema_path())
         .load(_bronze_source_path())
     )
     # Required: _metadata is hidden unless selected; otherwise it never lands in the bronze Delta table.
