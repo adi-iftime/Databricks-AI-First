@@ -1,0 +1,140 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  <title>AI Agents Presentation</title>
+
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/reveal.js/dist/reveal.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js/dist/reveal.js"></script>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: black;
+    }
+
+    .reveal,
+    .reveal .slides,
+    .reveal .slides section {
+      width: 100vw;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+
+    .slide-wrapper {
+      width: 100vw;
+      height: 100vh;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      overflow: hidden;
+      background: black;
+    }
+
+    .slide-frame {
+      width: 1280px;
+      height: 720px;
+
+      border: none;
+
+      transform-origin: center center;
+
+      box-shadow:
+        0 0 40px rgba(0,0,0,0.5);
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="reveal">
+  <div class="slides" id="slides-container"></div>
+</div>
+
+<script>
+
+const totalSlides = 12;
+
+const slidesContainer =
+  document.getElementById('slides-container');
+
+for (let i = 1; i <= totalSlides; i++) {
+
+  const section = document.createElement('section');
+
+  section.innerHTML = `
+    <div class="slide-wrapper">
+      <iframe
+        class="slide-frame"
+        src="slides/slide${i}.html">
+      </iframe>
+    </div>
+  `;
+
+  slidesContainer.appendChild(section);
+}
+
+function resizeSlides() {
+
+  const baseWidth = 1280;
+  const baseHeight = 720;
+
+  const scale = Math.min(
+    window.innerWidth / baseWidth,
+    window.innerHeight / baseHeight
+  );
+
+  document.querySelectorAll('.slide-frame')
+    .forEach(frame => {
+      frame.style.transform = `scale(${scale})`;
+    });
+}
+
+window.addEventListener('resize', resizeSlides);
+
+resizeSlides();
+
+Reveal.initialize({
+
+  width: 1280,
+  height: 720,
+
+  margin: 0,
+
+  minScale: 1,
+  maxScale: 1,
+
+  controls: true,
+  progress: true,
+  hash: true,
+  center: false,
+
+  transition: 'fade',
+  backgroundTransition: 'fade',
+
+  autoAnimate: true,
+
+  autoAnimateDuration: 0.8,
+
+  slideNumber: true,
+
+  navigationMode: 'default',
+
+  mouseWheel: true
+
+});
+
+</script>
+
+</body>
+</html>

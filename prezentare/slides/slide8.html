@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="light" style=""><head>
+
+
+<title>Commands &amp; Hook Automation</title>
+
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #0a0a0f;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .slide-container {
+            position: relative;
+            width: 1280px;
+            height: 720px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+        }
+        
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1280px;
+            height: 720px;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+        
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1280px;
+            height: 720px;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 2;
+        }
+        
+        .header {
+            position: absolute;
+            top: 40px;
+            left: 90px;
+            width: 1100px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 10;
+        }
+        
+        .slide-title {
+            font-size: 42px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+        
+        .slide-subtitle {
+            font-size: 20px;
+            color: #94a3b8;
+        }
+        
+        .slide-number {
+            font-size: 14px;
+            color: #64748b;
+            background: rgba(30, 41, 59, 0.8);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-top: 10px;
+        }
+        
+        .main-content {
+            position: absolute;
+            top: 135px;
+            left: 90px;
+            width: 1100px;
+            height: 520px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            z-index: 10;
+        }
+        
+        .top-section {
+            display: flex;
+            gap: 30px;
+            align-items: stretch;
+            height: 500px;
+        }
+        
+        .left-panel {
+            width: 535px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        
+        .key-message {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .message-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            background: rgba(59, 130, 246, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        
+        .message-content {
+            flex: 1;
+        }
+        
+        .message-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+        
+        .message-text {
+            font-size: 14px;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+        
+        .commands-section {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 24px;
+            flex-grow: 1;
+        }
+        
+        .commands-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .commands-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        
+        .commands-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 12px;
+            background: rgba(16, 185, 129, 0.15);
+            border-radius: 20px;
+            font-size: 12px;
+            color: #10b981;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+        }
+        
+        .commands-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .command-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+        }
+        
+        .command-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            background: rgba(59, 130, 246, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+        
+        .command-content {
+            flex: 1;
+        }
+        
+        .command-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 2px;
+        }
+        
+        .command-desc {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+        
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .flow-section {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 24px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .flow-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .flow-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        
+        .flow-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 12px;
+            background: rgba(16, 185, 129, 0.15);
+            border-radius: 20px;
+            font-size: 12px;
+            color: #10b981;
+        }
+        
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 30px;
+            flex: 1;
+            max-height: 180px;
+        }
+        
+        .flow-step {
+            flex: 1;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 18px 10px;
+            text-align: center;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-size: 18px;
+        }
+        
+        .step-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+        
+        .step-desc {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+        
+        .flow-arrow {
+            color: #475569;
+            font-size: 18px;
+            opacity: 0.5;
+        }
+        
+        .hook-section {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 12px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            margin-top: auto;
+        }
+        
+        .hook-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            background: rgba(16, 185, 129, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #10b981;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+        
+        .hook-content {
+            flex: 1;
+        }
+        
+        .hook-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+        
+        .hook-desc {
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.4;
+        }
+        
+        .bottom-section {
+            position: absolute;
+            top: 650px;
+            left: 90px;
+            width: 1100px;
+            z-index: 10;
+        }
+        
+        .lesson-text {
+            font-size: 16px;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(59, 130, 246, 0.1);
+            padding: 12px 28px;
+            border-radius: 30px;
+            width: fit-content;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .lesson-text i {
+            color: #3b82f6;
+        }
+        
+        .lesson-highlight {
+            color: #3b82f6;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body style="">
+<div class="slide-container">
+<div class="background-pattern"></div>
+<div class="grid-overlay"></div>
+<div class="header">
+<div data-object-type="textbox">
+<div class="slide-title">Commands &amp; Hook Automation</div>
+<div class="slide-subtitle">Commands orchestrează munca; hooks automatizează repetitivele</div>
+</div>
+<div class="slide-number">Slide 8/12</div>
+</div>
+<div class="main-content">
+<div class="top-section">
+
+<div class="left-panel">
+<div class="key-message" data-object-type="textbox" style="height: 130px;">
+<div class="message-icon">
+<i class="fas fa-terminal"></i>
+</div>
+<div class="message-content">
+<div class="message-title">Interfața de comandă pentru orchestrare</div>
+<div class="message-text">Comenzile sunt interfața umană pentru orchestrare.</div>
+</div>
+</div>
+<div class="commands-section" data-object-type="textbox" style="height: 346px;">
+<div class="commands-header">
+<div class="commands-title">Available Commands</div>
+<div class="commands-status">
+<div class="status-dot"></div>
+<span>Active</span>
+</div>
+</div>
+<div class="commands-grid">
+<div class="command-item">
+<div class="command-icon"><i class="fas fa-file-alt"></i></div>
+<div class="command-content">
+<div class="command-name">/spec</div>
+<div class="command-desc">Define specifications</div>
+</div>
+</div>
+<div class="command-item">
+<div class="command-icon"><i class="fas fa-project-diagram"></i></div>
+<div class="command-content">
+<div class="command-name">/plan</div>
+<div class="command-desc">Create plan</div>
+</div>
+</div>
+<div class="command-item">
+<div class="command-icon"><i class="fas fa-code"></i></div>
+<div class="command-content">
+<div class="command-name">/build</div>
+<div class="command-desc">Build implementation</div>
+</div>
+</div>
+<div class="command-item">
+<div class="command-icon"><i class="fas fa-check-circle"></i></div>
+<div class="command-content">
+<div class="command-name">/review</div>
+<div class="command-desc">Review code</div>
+</div>
+</div>
+<div class="command-item">
+<div class="command-icon"><i class="fas fa-code-branch"></i></div>
+<div class="command-content">
+<div class="command-name">/write-new-pr</div>
+<div class="command-desc">Create PR</div>
+</div>
+</div>
+<div class="command-item">
+<div class="command-icon"><i class="fas fa-sync"></i></div>
+<div class="command-content">
+<div class="command-name">/update-pr</div>
+<div class="command-desc">Update PR</div>
+</div>
+</div>
+<div class="command-item">
+<div class="command-icon"><i class="fas fa-ticket-alt"></i></div>
+<div class="command-content">
+<div class="command-name">/jira-story-writer</div>
+<div class="command-desc">Write Jira stories</div>
+</div>
+</div>
+<div class="command-item">
+<div class="command-icon"><i class="fas fa-bug"></i></div>
+<div class="command-content">
+<div class="command-name">/debug</div>
+<div class="command-desc">Debug issues</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="right-panel">
+<div class="flow-section" data-object-type="textbox" style="height: 500px;">
+<div class="flow-header">
+<div class="flow-title">Git Push → Draft PR Flow</div>
+<div class="flow-status">
+<div class="status-dot"></div>
+<span>Automated</span>
+</div>
+</div>
+<div class="flow-diagram">
+<div class="flow-step">
+<div class="step-icon" style="background: rgba(59, 130, 246, 0.2); color: #3b82f6;">
+<i class="fas fa-code-branch"></i>
+</div>
+<div class="step-name">git push</div>
+<div class="step-desc">Push changes</div>
+</div>
+<div class="flow-arrow"><i class="fas fa-chevron-right"></i></div>
+<div class="flow-step">
+<div class="step-icon" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">
+<i class="fas fa-file-code"></i>
+</div>
+<div class="step-name">Draft PR</div>
+<div class="step-desc">Auto-create</div>
+</div>
+<div class="flow-arrow"><i class="fas fa-chevron-right"></i></div>
+<div class="flow-step">
+<div class="step-icon" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">
+<i class="fas fa-eye"></i>
+</div>
+<div class="step-name">Review</div>
+<div class="step-desc">Agent review</div>
+</div>
+</div>
+<div class="hook-section">
+<div class="hook-icon">
+<i class="fas fa-cog"></i>
+</div>
+<div class="hook-content">
+<div class="hook-title">Hook Automation</div>
+<div class="hook-desc">git push triggers automatic draft PR creation with metadata and checklist</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="bottom-section" data-object-type="textbox" style="top: 550px;">
+<div class="lesson-text" style="position: relative; transform: translate(142.861px, -38.3034px);">
+<i class="fas fa-lightbulb"></i>
+<span>Key insight: <span class="lesson-highlight">Comenzile orchestrează munca; hookurile automatizează repetitivele</span></span>
+</div>
+</div>
+</div>
+</div>
+
+</body></html>

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="light" style=""><head>
+
+
+<title>Obiectivul inițial</title>
+
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #0a0a0f;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .slide-container {
+            position: relative;
+            width: 1280px;
+            height: 720px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+        }
+        
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1280px;
+            height: 720px;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+        
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1280px;
+            height: 720px;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 2;
+        }
+        
+        .header {
+            position: absolute;
+            top: 40px;
+            left: 90px;
+            width: 1100px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+        
+        .slide-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+        
+        .slide-subtitle {
+            font-size: 18px;
+            color: #94a3b8;
+        }
+        
+        .slide-number {
+            font-size: 14px;
+            color: #64748b;
+            background: rgba(30, 41, 59, 0.8);
+            padding: 8px 16px;
+            border-radius: 20px;
+        }
+        
+        .main-content {
+            position: absolute;
+            top: 130px;
+            left: 90px;
+            width: 1100px;
+            height: 520px;
+            display: flex;
+            gap: 40px;
+            z-index: 10;
+        }
+        
+        .comparison-column {
+            flex: 1;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 16px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            height: 520px;
+        }
+        
+        .column-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .column-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        
+        .manual-icon {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+        
+        .ai-icon {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+        
+        .column-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        
+        .column-subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+        
+        .feature-list {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 16px;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 8px;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+        }
+        
+        .feature-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        
+        .manual-feature .feature-icon {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+        
+        .ai-feature .feature-icon {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+        
+        .feature-content {
+            flex: 1;
+        }
+        
+        .feature-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+        
+        .feature-desc {
+            font-size: 14px;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: auto;
+        }
+        
+        .status-pending {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+        
+        .status-active {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+        
+        .bottom-section {
+            position: absolute;
+            top: 660px;
+            left: 90px;
+            width: 1100px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+        
+        .goal-text {
+            font-size: 16px;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .goal-highlight {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+        
+        .metrics {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .metric-item {
+            text-align: center;
+            padding: 6px 16px;
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 8px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            min-width: 110px;
+        }
+        
+        .metric-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        
+        .metric-label {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body style="">
+<div class="slide-container">
+<div class="background-pattern"></div>
+<div class="grid-overlay"></div>
+<div class="header">
+<div data-object-type="textbox">
+<div class="slide-title">Obiectivul inițial</div>
+<div class="slide-subtitle">„Vreau agenți care livrează proiecte cap-coadă."</div>
+</div>
+<div class="slide-number">Slide 2/12</div>
+</div>
+<div class="main-content">
+<div class="comparison-column" data-object-type="textbox">
+<div class="column-header">
+<div class="column-icon manual-icon">
+<i class="fas fa-user"></i>
+</div>
+<div>
+<div class="column-title">Manual SDLC</div>
+<div class="column-subtitle">Proces tradițional</div>
+</div>
+<span class="status-badge status-pending">Manual</span>
+</div>
+<div class="feature-list">
+<div class="feature-item manual-feature">
+<div class="feature-icon">
+<i class="fas fa-clock"></i>
+</div>
+<div class="feature-content">
+<div class="feature-title">Întârzieri și variabilitate</div>
+<div class="feature-desc">Procese manuale cu timpi de execuție variabili și dependență de factori umani</div>
+</div>
+</div>
+<div class="feature-item manual-feature">
+<div class="feature-icon">
+<i class="fas fa-exchange-alt"></i>
+</div>
+<div class="feature-content">
+<div class="feature-title">Transferuri manuale între pași</div>
+<div class="feature-desc">Handoff-uri între echipe cu risc de pierdere de informație</div>
+</div>
+</div>
+<div class="feature-item manual-feature">
+<div class="feature-icon">
+<i class="fas fa-eye-slash"></i>
+</div>
+<div class="feature-content">
+<div class="feature-title">Vizibilitate redusă</div>
+<div class="feature-desc">Dificultate în tracking progres și identificare blocaje</div>
+</div>
+</div>
+</div>
+</div>
+<div class="comparison-column" data-object-type="textbox">
+<div class="column-header">
+<div class="column-icon ai-icon">
+<i class="fas fa-robot"></i>
+</div>
+<div>
+<div class="column-title">AI-assisted SDLC</div>
+<div class="column-subtitle">Automatizare completă</div>
+</div>
+<span class="status-badge status-active">AI Active</span>
+</div>
+<div class="feature-list">
+<div class="feature-item ai-feature">
+<div class="feature-icon">
+<i class="fas fa-bolt"></i>
+</div>
+<div class="feature-content">
+<div class="feature-title">Viteză + Consistență</div>
+<div class="feature-desc">Execuție rapidă și predictibilă cu standarde uniforme</div>
+</div>
+</div>
+<div class="feature-item ai-feature">
+<div class="feature-icon">
+<i class="fas fa-code-branch"></i>
+</div>
+<div class="feature-content">
+<div class="feature-title">PR-uri automate și stories Jira</div>
+<div class="feature-desc">Integrare automată între planificare și implementare</div>
+</div>
+</div>
+<div class="feature-item ai-feature">
+<div class="feature-icon">
+<i class="fas fa-project-diagram"></i>
+</div>
+<div class="feature-content">
+<div class="feature-title">Trasabilitate completă</div>
+<div class="feature-desc">Tracking end-to-end de la requirement la deployment</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bottom-section" data-object-type="textbox">
+<div class="goal-text">
+<i class="fas fa-target"></i>
+<span>Obiectiv: <span class="goal-highlight">echipă AI cu ownership pe fluxul complet</span></span>
+</div>
+<div class="metrics">
+<div class="metric-item">
+<div class="metric-value">3x</div>
+<div class="metric-label">Viteză</div>
+</div>
+<div class="metric-item">
+<div class="metric-value">90%</div>
+<div class="metric-label">Consistență</div>
+</div>
+<div class="metric-item">
+<div class="metric-value">100%</div>
+<div class="metric-label">Trasabilitate</div>
+</div>
+</div>
+</div>
+</div>
+
+</body></html>

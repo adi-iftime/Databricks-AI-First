@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="light" style=""><head>
+
+
+<title>Slide 10 — Databricks case study (rezultatul tehnic)</title>
+
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #0a0a0f;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .slide-container {
+            position: relative;
+            width: 1280px;
+            height: 720px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+        }
+        
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1280px;
+            height: 720px;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+        
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1280px;
+            height: 720px;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 2;
+        }
+        
+        .header {
+            position: absolute;
+            top: 40px;
+            left: 90px;
+            width: 1100px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 10;
+        }
+        
+        .slide-title {
+            font-size: 38px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+        
+        .slide-subtitle {
+            font-size: 20px;
+            color: #94a3b8;
+        }
+        
+        .slide-number {
+            font-size: 14px;
+            color: #64748b;
+            background: rgba(30, 41, 59, 0.8);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-top: 10px;
+        }
+        
+        .main-content {
+            position: absolute;
+            top: 140px;
+            left: 90px;
+            width: 1100px;
+            height: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            z-index: 10;
+        }
+        
+        .top-section {
+            display: flex;
+            gap: 24px;
+            align-items: stretch;
+            flex: 1;
+        }
+        
+        .left-panel {
+            width: 520px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        
+        .key-message {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 16px;
+            padding: 28px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .message-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            background: rgba(16, 185, 129, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #10b981;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        
+        .message-content {
+            flex: 1;
+        }
+        
+        .message-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+        
+        .message-text {
+            font-size: 15px;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+        
+        .architecture-section {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 28px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        
+        .section-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 12px;
+            background: rgba(16, 185, 129, 0.15);
+            border-radius: 20px;
+            font-size: 12px;
+            color: #10b981;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+        }
+        
+        .architecture-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        
+        .arch-item {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .arch-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        
+        .arch-content {
+            flex: 1;
+        }
+        
+        .arch-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 2px;
+        }
+        
+        .arch-desc {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+        
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .ecosystem-section {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 28px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .ecosystem-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .ecosystem-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        
+        .ecosystem-map {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            flex: 1;
+            justify-content: center;
+        }
+        
+        .center-hub {
+            background: rgba(59, 130, 246, 0.2);
+            border: 2px solid rgba(59, 130, 246, 0.4);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .hub-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            background: rgba(59, 130, 246, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+        
+        .hub-content {
+            flex: 1;
+        }
+        
+        .hub-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+        
+        .hub-desc {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+        
+        .connected-services {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        
+        .service-item {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 10px;
+        }
+        
+        .service-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .service-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        
+        .service-status {
+            font-size: 11px;
+            color: #10b981;
+        }
+        
+        .bottom-section {
+            position: absolute;
+            top: 645px;
+            left: 90px;
+            width: 1100px;
+            z-index: 10;
+        }
+        
+        .lesson-text {
+            font-size: 16px;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(59, 130, 246, 0.1);
+            padding: 14px 32px;
+            border-radius: 30px;
+            width: fit-content;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .lesson-text i {
+            color: #3b82f6;
+        }
+        
+        .lesson-highlight {
+            color: #3b82f6;
+            font-weight: 700;
+        }
+        
+        .icon-1 { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .icon-2 { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .icon-3 { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .icon-4 { background: rgba(139, 92, 246, 0.2); color: #8b5cf6; }
+        
+        .service-1 { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .service-2 { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .service-3 { background: rgba(139, 92, 246, 0.2); color: #8b5cf6; }
+    </style>
+</head>
+<body style="">
+<div class="slide-container">
+<div class="background-pattern"></div>
+<div class="grid-overlay"></div>
+<div class="header">
+<div data-object-type="textbox">
+<div class="slide-title">Databricks case study (rezultatul tehnic)</div>
+<div class="slide-subtitle">Framework-ul a fost validat pe un proiect real</div>
+</div>
+<div class="slide-number">Slide 10/12</div>
+</div>
+<div class="main-content">
+<div class="top-section">
+<div class="left-panel">
+<div class="key-message" data-object-type="textbox">
+<div class="message-icon">
+<i class="fas fa-check-circle"></i>
+</div>
+<div class="message-content">
+<div class="message-title">Validare în producție</div>
+<div class="message-text">Modelul a fost aplicat pe platformă Databricks completă, cu pipeline, CI/CD și infrastructură.</div>
+</div>
+</div>
+<div class="architecture-section" data-object-type="textbox">
+<div class="section-header">
+<div class="section-title">Arhitectura Databricks</div>
+<div class="section-status">
+<div class="status-dot"></div>
+<span>Active</span>
+</div>
+</div>
+<div class="architecture-grid">
+<div class="arch-item">
+<div class="arch-icon icon-1"><i class="fas fa-cube"></i></div>
+<div class="arch-content">
+<div class="arch-name">DAB</div>
+<div class="arch-desc">Databricks Asset Bundles</div>
+</div>
+</div>
+<div class="arch-item">
+<div class="arch-icon icon-2"><i class="fas fa-layer-group"></i></div>
+<div class="arch-content">
+<div class="arch-name">DLT</div>
+<div class="arch-desc">Delta Live Tables</div>
+</div>
+</div>
+<div class="arch-item">
+<div class="arch-icon icon-3"><i class="fas fa-cogs"></i></div>
+<div class="arch-content">
+<div class="arch-name">GitHub Actions</div>
+<div class="arch-desc">CI/CD pipeline</div>
+</div>
+</div>
+<div class="arch-item">
+<div class="arch-icon icon-4"><i class="fas fa-cloud"></i></div>
+<div class="arch-content">
+<div class="arch-name">Azure</div>
+<div class="arch-desc">IaC + Databricks UC</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="right-panel">
+<div class="ecosystem-section" data-object-type="textbox">
+<div class="ecosystem-header">
+<div class="ecosystem-title">Ecosistem Databricks</div>
+<div class="section-status">
+<div class="status-dot"></div>
+<span>Connected</span>
+</div>
+</div>
+<div class="ecosystem-map">
+<div class="center-hub">
+<div class="hub-icon"><i class="fas fa-database"></i></div>
+<div class="hub-content">
+<div class="hub-name">Databricks Platform</div>
+<div class="hub-desc">Medallion architecture + UC</div>
+</div>
+</div>
+<div class="connected-services">
+<div class="service-item">
+<div class="service-icon service-1"><i class="fab fa-github"></i></div>
+<div class="service-name">GitHub</div>
+<div class="service-status">CI/CD</div>
+</div>
+<div class="service-item">
+<div class="service-icon service-2"><i class="fab fa-jira"></i></div>
+<div class="service-name">Jira</div>
+<div class="service-status">Planning</div>
+</div>
+<div class="service-item">
+<div class="service-icon service-3"><i class="fab fa-microsoft"></i></div>
+<div class="service-name">Azure</div>
+<div class="service-status">Infra</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bottom-section" data-object-type="textbox">
+
+</div>
+</div>
+
+</body></html>

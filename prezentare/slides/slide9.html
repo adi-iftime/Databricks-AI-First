@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="light" style=""><head>
+
+
+<title>Modelul SDLC end-to-end</title>
+
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #0a0a0f;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .slide-container {
+            position: relative;
+            width: 1280px;
+            height: 720px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+        }
+        
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1280px;
+            height: 720px;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+        
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1280px;
+            height: 720px;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 2;
+        }
+        
+        .header {
+            position: absolute;
+            top: 40px;
+            left: 90px;
+            width: 1100px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 10;
+        }
+        
+        .slide-title {
+            font-size: 42px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+        
+        .slide-subtitle {
+            font-size: 20px;
+            color: #94a3b8;
+        }
+        
+        .slide-number {
+            font-size: 14px;
+            color: #64748b;
+            background: rgba(30, 41, 59, 0.8);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-top: 10px;
+        }
+        
+        .main-content {
+            position: absolute;
+            top: 135px;
+            left: 90px;
+            width: 1100px;
+            height: 520px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 10;
+        }
+        
+        .flow-container {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 20px;
+            padding: 24px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .flow-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .flow-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        
+        .flow-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 20px;
+            font-size: 13px;
+            color: #10b981;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.5; }
+        }
+        
+        .sdlc-flow {
+            display: flex;
+            align-items: stretch;
+            gap: 12px;
+            flex: 1;
+        }
+        
+        .flow-step {
+            flex: 1;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+        
+        .step-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(59, 130, 246, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #3b82f6;
+            margin-bottom: 12px;
+        }
+        
+        .step-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+        
+        .step-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+        
+        .step-desc {
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.3;
+        }
+        
+        .step-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .status-active { background: #10b981; }
+        
+        .arrow-connector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #475569;
+            font-size: 16px;
+            opacity: 0.6;
+        }
+        
+        .gates-section {
+            display: flex;
+            gap: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .gate-item {
+            flex: 1;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .gate-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        
+        .gate-content {
+            flex: 1;
+        }
+        
+        .gate-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 2px;
+        }
+        
+        .gate-desc {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+        
+        .feedback-loop {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .feedback-text {
+            font-size: 12px;
+            color: #60a5fa;
+        }
+        
+        .bottom-section {
+            position: absolute;
+            top: 665px;
+            left: 90px;
+            width: 1100px;
+            z-index: 10;
+        }
+        
+        .lesson-text {
+            font-size: 15px;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(59, 130, 246, 0.1);
+            padding: 10px 24px;
+            border-radius: 30px;
+            width: fit-content;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .lesson-text i {
+            color: #3b82f6;
+        }
+        
+        .lesson-highlight {
+            color: #3b82f6;
+            font-weight: 700;
+        }
+        
+        .icon-1 { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .icon-2 { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .icon-3 { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .icon-4 { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .icon-5 { background: rgba(139, 92, 246, 0.2); color: #8b5cf6; }
+        .icon-6 { background: rgba(6, 182, 212, 0.2); color: #06b6d4; }
+        
+        .gate-1 { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .gate-2 { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .gate-3 { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .gate-4 { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+    </style>
+</head>
+<body style="">
+<div class="slide-container">
+<div class="background-pattern"></div>
+<div class="grid-overlay"></div>
+<div class="header">
+<div data-object-type="textbox">
+<div class="slide-title">Modelul SDLC end-to-end</div>
+<div class="slide-subtitle">Need → Plan → Build → Gate → PR → Deploy</div>
+</div>
+<div class="slide-number">Slide 9/12</div>
+</div>
+<div class="main-content">
+<div class="flow-container" data-object-type="textbox">
+<div class="flow-header">
+<div class="flow-title">Complete SDLC Flow</div>
+<div class="flow-status">
+<div class="status-dot"></div>
+<span>Active</span>
+</div>
+</div>
+<div class="sdlc-flow">
+<div class="flow-step">
+<div class="step-number">1</div>
+<div class="step-icon icon-1"><i class="fas fa-lightbulb"></i></div>
+<div class="step-name">Need</div>
+<div class="step-desc">Requirement analysis</div>
+<div class="step-status status-active"></div>
+</div>
+<div class="arrow-connector"><i class="fas fa-chevron-right"></i></div>
+<div class="flow-step">
+<div class="step-number">2</div>
+<div class="step-icon icon-2"><i class="fas fa-project-diagram"></i></div>
+<div class="step-name">Plan</div>
+<div class="step-desc">Jira tasking &amp; planning</div>
+<div class="step-status status-active"></div>
+</div>
+<div class="arrow-connector"><i class="fas fa-chevron-right"></i></div>
+<div class="flow-step">
+<div class="step-number">3</div>
+<div class="step-icon icon-3"><i class="fas fa-code"></i></div>
+<div class="step-name">Build</div>
+<div class="step-desc">Parallel execution</div>
+<div class="step-status status-active"></div>
+</div>
+<div class="arrow-connector"><i class="fas fa-chevron-right"></i></div>
+<div class="flow-step">
+<div class="step-number">4</div>
+<div class="step-icon icon-4"><i class="fas fa-shield-alt"></i></div>
+<div class="step-name">Gate</div>
+<div class="step-desc">Security + QA + Review</div>
+<div class="step-status status-active"></div>
+</div>
+<div class="arrow-connector"><i class="fas fa-chevron-right"></i></div>
+<div class="flow-step">
+<div class="step-number">5</div>
+<div class="step-icon icon-5"><i class="fas fa-code-branch"></i></div>
+<div class="step-name">PR</div>
+<div class="step-desc">Pull request</div>
+<div class="step-status status-active"></div>
+</div>
+<div class="arrow-connector"><i class="fas fa-chevron-right"></i></div>
+<div class="flow-step">
+<div class="step-number">6</div>
+<div class="step-icon icon-6"><i class="fas fa-rocket"></i></div>
+<div class="step-name">Deploy</div>
+<div class="step-desc">Production release</div>
+<div class="step-status status-active"></div>
+</div>
+</div>
+<div class="gates-section">
+<div class="gate-item">
+<div class="gate-icon gate-1"><i class="fas fa-lock"></i></div>
+<div class="gate-content">
+<div class="gate-name">Security Gate</div>
+<div class="gate-desc">Vulnerability scan</div>
+</div>
+</div>
+<div class="gate-item">
+<div class="gate-icon gate-2"><i class="fas fa-check-circle"></i></div>
+<div class="gate-content">
+<div class="gate-name">QA Gate</div>
+<div class="gate-desc">Quality assurance</div>
+</div>
+</div>
+<div class="gate-item">
+<div class="gate-icon gate-3"><i class="fas fa-eye"></i></div>
+<div class="gate-content">
+<div class="gate-name">Review Gate</div>
+<div class="gate-desc">Code review</div>
+</div>
+</div>
+<div class="gate-item">
+<div class="gate-icon gate-4"><i class="fas fa-user-check"></i></div>
+<div class="gate-content">
+<div class="gate-name">Approval Gate</div>
+<div class="gate-desc">Human approval</div>
+</div>
+</div>
+</div>
+<div class="feedback-loop">
+<i class="fas fa-sync-alt"></i>
+<span class="feedback-text">Feedback loop: Deploy → Monitor → Analyze → Improve → Need</span>
+</div>
+</div>
+</div>
+<div class="bottom-section" data-object-type="textbox">
+<div class="lesson-text" style="position: relative; transform: translate(240.173px, -5.17613px);">
+<i class="fas fa-lightbulb"></i>
+<span>Key Insight: <span class="lesson-highlight">Human-in-the-loop în punctele critice, agenții accelerează restul fluxului</span></span>
+</div>
+</div>
+</div>
+
+</body></html>

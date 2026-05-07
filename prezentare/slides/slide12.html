@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="light" style=""><head>
+
+
+<title>Lecții finale</title>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background: #0a0a0f;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    
+    .slide-container {
+        position: relative;
+        width: 1280px;
+        height: 720px;
+        overflow: hidden;
+        background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+    }
+    
+    .background-pattern {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 1280px;
+        height: 720px;
+        background-image: 
+            radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+        z-index: 1;
+    }
+    
+    .grid-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 1280px;
+        height: 720px;
+        background-image: 
+            linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+        background-size: 50px 50px;
+        z-index: 2;
+    }
+    
+    .header {
+        position: absolute;
+        top: 40px;
+        left: 90px;
+        width: 1100px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        z-index: 10;
+    }
+    
+    .slide-title {
+        font-size: 38px;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 8px;
+    }
+    
+    .slide-subtitle {
+        font-size: 20px;
+        color: #94a3b8;
+    }
+    
+    .slide-number {
+        font-size: 14px;
+        color: #64748b;
+        background: rgba(30, 41, 59, 0.8);
+        padding: 8px 16px;
+        border-radius: 20px;
+        margin-top: 10px;
+    }
+    
+    .main-content {
+        position: absolute;
+        top: 130px;
+        left: 90px;
+        width: 1100px;
+        height: 560px;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        z-index: 10;
+    }
+    
+    .top-section {
+        display: flex;
+        gap: 24px;
+        align-items: stretch;
+        height: 410px;
+    }
+    
+    .left-panel {
+        width: 460px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .key-message {
+        background: rgba(30, 41, 59, 0.7);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        border-radius: 16px;
+        padding: 24px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        height: 120px;
+    }
+    
+    .message-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        background: rgba(59, 130, 246, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #3b82f6;
+        font-size: 24px;
+        flex-shrink: 0;
+    }
+    
+    .message-content {
+        flex: 1;
+    }
+    
+    .message-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #ffffff;
+        margin-bottom: 6px;
+    }
+    
+    .message-text {
+        font-size: 14px;
+        color: #cbd5e1;
+        line-height: 1.5;
+    }
+    
+    .evolution-flow {
+        background: rgba(30, 41, 59, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 24px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+    
+    .flow-title {
+        font-size: 17px;
+        font-weight: 600;
+        color: #ffffff;
+        margin-bottom: 30px;
+    }
+    
+    .flow-steps {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 4px;
+    }
+    
+    .flow-step {
+        width: 92px;
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        border-radius: 10px;
+        padding: 12px 6px;
+        text-align: center;
+        position: relative;
+    }
+    
+    .step-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        margin: 0 auto 10px;
+    }
+    
+    .step-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: #ffffff;
+        margin-bottom: 4px;
+    }
+    
+    .step-desc {
+        font-size: 11px;
+        color: #94a3b8;
+        line-height: 1.2;
+    }
+    
+    .flow-arrow {
+        color: #475569;
+        font-size: 14px;
+        padding-top: 36px;
+        opacity: 0.6;
+    }
+    
+    .right-panel {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .do-dont-section {
+        background: rgba(30, 41, 59, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 28px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+    
+    .section-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #ffffff;
+    }
+    
+    .do-dont-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        flex: 1;
+    }
+    
+    .column {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .column-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+    }
+    
+    .column-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+    }
+    
+    .column-title {
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+    }
+    
+    .do-column .column-icon {
+        background: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+    }
+    
+    .do-column .column-title {
+        color: #10b981;
+    }
+    
+    .dont-column .column-icon {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+    }
+    
+    .dont-column .column-title {
+        color: #ef4444;
+    }
+    
+    .item-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 14px 16px;
+        background: rgba(15, 23, 42, 0.4);
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        min-height: 60px;
+    }
+    
+    .item-icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+    
+    .item-text {
+        font-size: 14px;
+        color: #e2e8f0;
+        line-height: 1.4;
+        flex: 1;
+    }
+    
+    .bottom-section {
+        display: flex;
+        gap: 20px;
+        align-items: stretch;
+        height: 100px;
+    }
+    
+    .final-statement {
+        flex: 1;
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        border-radius: 16px;
+        padding: 0 24px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+    
+    .statement-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        background: rgba(59, 130, 246, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #3b82f6;
+        font-size: 24px;
+        flex-shrink: 0;
+    }
+    
+    .statement-content {
+        flex: 1;
+    }
+    
+    .statement-text {
+        font-size: 16px;
+        color: #e2e8f0;
+        line-height: 1.5;
+    }
+    
+    .highlight {
+        color: #3b82f6;
+        font-weight: 600;
+    }
+    
+    .key-metrics {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+    }
+    
+    .metric-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 20px;
+        height: 100%;
+        background: rgba(15, 23, 42, 0.5);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .metric-icon {
+        color: #3b82f6;
+        font-size: 16px;
+    }
+    
+    .metric-value {
+        font-size: 18px;
+        font-weight: 700;
+        color: #ffffff;
+    }
+    
+    .metric-label {
+        font-size: 12px;
+        color: #94a3b8;
+    }
+</style>
+</head>
+<body style="">
+<div class="slide-container">
+<div class="background-pattern"></div>
+<div class="grid-overlay"></div>
+<div class="header">
+<div data-object-type="textbox">
+<div class="slide-title">Lecții finale</div>
+<div class="slide-subtitle">Chaos → architecture → governance → delivery predictibil</div>
+</div>
+<div class="slide-number">Slide 12/12</div>
+</div>
+<div class="main-content">
+<div class="top-section">
+<div class="left-panel">
+<div class="key-message" data-object-type="textbox">
+<div class="message-icon">
+<i class="fas fa-lightbulb"></i>
+</div>
+<div class="message-content">
+<div class="message-title">Evoluția sistemului</div>
+<div class="message-text">De la haos la delivery predictibil prin arhitectură și guvernanță</div>
+</div>
+</div>
+<div class="evolution-flow" data-object-type="textbox">
+<div class="flow-title">Evoluție sistem AI</div>
+<div class="flow-steps">
+<div class="flow-step">
+<div class="step-icon" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;">
+<i class="fas fa-random"></i>
+</div>
+<div class="step-name">Haos</div>
+<div class="step-desc">Prompt vag</div>
+</div>
+<div class="flow-arrow"><i class="fas fa-chevron-right"></i></div>
+<div class="flow-step">
+<div class="step-icon" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">
+<i class="fas fa-sitemap"></i>
+</div>
+<div class="step-name">Arhitectură</div>
+<div class="step-desc">Structură clară</div>
+</div>
+<div class="flow-arrow"><i class="fas fa-chevron-right"></i></div>
+<div class="flow-step">
+<div class="step-icon" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">
+<i class="fas fa-shield-alt"></i>
+</div>
+<div class="step-name">Guvernanță</div>
+<div class="step-desc">Reguli &amp; guardrails</div>
+</div>
+<div class="flow-arrow"><i class="fas fa-chevron-right"></i></div>
+<div class="flow-step">
+<div class="step-icon" style="background: rgba(59, 130, 246, 0.2); color: #3b82f6;">
+<i class="fas fa-check-circle"></i>
+</div>
+<div class="step-name">Predictibil</div>
+<div class="step-desc">Delivery stabil</div>
+</div>
+</div>
+</div>
+</div>
+<div class="right-panel">
+<div class="do-dont-section" data-object-type="textbox">
+<div class="section-header">
+<div class="section-title">Do vs Don't</div>
+<div style="display: flex; align-items: center; gap: 8px;">
+<div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></div>
+<span style="font-size: 13px; color: #10b981; font-weight: 500;">Best practices</span>
+</div>
+</div>
+<div class="do-dont-grid">
+<div class="column do-column">
+<div class="column-header">
+<div class="column-icon"><i class="fas fa-check"></i></div>
+<div class="column-title">DO</div>
+</div>
+<div class="item-list">
+<div class="item">
+<div class="item-icon" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">
+<i class="fas fa-check"></i>
+</div>
+<div class="item-text">Standardizare și reguli clare</div>
+</div>
+<div class="item">
+<div class="item-icon" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">
+<i class="fas fa-check"></i>
+</div>
+<div class="item-text">Modularitate (Agents | Skills | Rules)</div>
+</div>
+<div class="item">
+<div class="item-icon" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">
+<i class="fas fa-check"></i>
+</div>
+<div class="item-text">Human-in-the-loop pe approvals critice</div>
+</div>
+</div>
+</div>
+<div class="column dont-column">
+<div class="column-header">
+<div class="column-icon"><i class="fas fa-times"></i></div>
+<div class="column-title">DON'T</div>
+</div>
+<div class="item-list">
+<div class="item">
+<div class="item-icon" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;">
+<i class="fas fa-times"></i>
+</div>
+<div class="item-text">Prompt vag, fără contracte</div>
+</div>
+<div class="item">
+<div class="item-icon" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;">
+<i class="fas fa-times"></i>
+</div>
+<div class="item-text">Over-engineering și dependențe fragile</div>
+</div>
+<div class="item">
+<div class="item-icon" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;">
+<i class="fas fa-times"></i>
+</div>
+<div class="item-text">Lipsa guvernanței și validării</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bottom-section">
+<div class="final-statement" data-object-type="textbox">
+<div class="statement-icon">
+<i class="fas fa-rocket"></i>
+</div>
+<div class="statement-content">
+<div class="statement-text">Performanța în <span class="highlight">AI engineering</span> vine din <span class="highlight">design operațional</span> și <span class="highlight">guardrails</span>, nu dintr-un prompt genial. Modelul este <span class="highlight">replicabil</span> pentru alte proiecte.</div>
+</div>
+</div>
+<div class="key-metrics">
+<div class="metric-item">
+<div class="metric-icon"><i class="fas fa-sync"></i></div>
+<div>
+<div class="metric-value">&nbsp; 3</div>
+<div class="metric-label">Iterații</div>
+</div>
+</div>
+<div class="metric-item">
+<div class="metric-icon"><i class="fas fa-check-circle"></i></div>
+<div>
+<div class="metric-value">Almost</div>
+<div class="metric-label" style="position: relative; transform: translate(5.17613px, -1.03523px);">Success</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</body></html>

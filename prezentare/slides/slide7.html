@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="light" style=""><head>
+
+
+<title>Slide 7 — Skills, Rules, Guardrails</title>
+
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #0a0a0f;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .slide-container {
+            position: relative;
+            width: 1280px;
+            height: 720px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+        }
+        
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1280px;
+            height: 720px;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+        
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1280px;
+            height: 720px;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 2;
+        }
+        
+        .header {
+            position: absolute;
+            top: 50px;
+            left: 90px;
+            width: 1100px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 10;
+        }
+        
+        .slide-title {
+            font-size: 42px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+        
+        .slide-subtitle {
+            font-size: 20px;
+            color: #94a3b8;
+            font-weight: 400;
+        }
+        
+        .slide-number {
+            font-size: 14px;
+            color: #64748b;
+            background: rgba(30, 41, 59, 0.8);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-top: 10px;
+        }
+        
+        .main-content {
+            position: absolute;
+            top: 170px;
+            left: 90px;
+            width: 1100px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            z-index: 10;
+        }
+        
+        .top-section {
+            display: flex;
+            gap: 24px;
+            align-items: stretch;
+        }
+        
+        .left-panel {
+            width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        
+        .key-message {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 20px;
+            padding: 28px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .message-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 14px;
+            background: rgba(59, 130, 246, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+        
+        .message-content {
+            flex: 1;
+        }
+        
+        .message-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+        
+        .message-text {
+            font-size: 15px;
+            color: #cbd5e1;
+            line-height: 1.55;
+        }
+        
+        .skills-matrix {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 24px;
+            flex-grow: 1;
+        }
+        
+        .matrix-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .matrix-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        
+        .matrix-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #10b981;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+        
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        
+        .skill-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .skill-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        
+        .skill-content {
+            flex: 1;
+        }
+        
+        .skill-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+        
+        .skill-desc {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+        
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        
+        .governance-section {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        
+        .guardrails-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            flex: 1;
+        }
+        
+        .guardrail-item {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        
+        .guardrail-header {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .guardrail-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        
+        .guardrail-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        
+        .guardrail-desc {
+            font-size: 13px;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+        
+        .guardrail-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #10b981;
+            margin-top: 4px;
+        }
+        
+        .bottom-section {
+            display: flex;
+            gap: 24px;
+            align-items: stretch;
+        }
+        
+        .approval-gates {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px 28px;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+        
+        .gates-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            background: rgba(16, 185, 129, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #10b981;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        
+        .gates-content {
+            flex: 1;
+        }
+        
+        .gates-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+        
+        .gates-desc {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 12px;
+        }
+        
+        .gates-flow {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .gate-step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+        
+        .gate-arrow {
+            color: #475569;
+            font-size: 14px;
+        }
+        
+        .security-gates {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            width: 320px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .security-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: rgba(239, 68, 68, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ef4444;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        
+        .security-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+        
+        .security-desc {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body style="">
+<div class="slide-container">
+<div class="background-pattern"></div>
+<div class="grid-overlay"></div>
+<div class="header" style="top: 40px; left: 90px; width: 1100px;">
+<div data-object-type="textbox">
+<div class="slide-title" style="position: relative; transform: translate(0px, -23.8102px);">Skills, Rules, Guardrails</div>
+<div class="slide-subtitle" style="position: relative; transform: translate(0px, -23.8102px);">Calitatea vine din guvernanță, nu din improvizație</div>
+</div>
+<div class="slide-number">Slide 7/12</div>
+</div>
+<div class="main-content" style="top: 135px; left: 90px; width: 1100px; height: 535px; justify-content: space-between;">
+<div class="top-section" style="position: relative; transform: translate(0px, -31.0568px);">
+<div class="left-panel">
+<div class="key-message" data-object-type="textbox">
+<div class="message-icon">
+<i class="fas fa-shield-alt"></i>
+</div>
+<div class="message-content">
+<div class="message-title">Guvernanță &amp; Quality Gates</div>
+<div class="message-text">Agenții devin consistenți datorită skill-urilor și regulilor. Guardrails reduc drift-ul și impun ordine în execuție.</div>
+</div>
+</div>
+<div class="skills-matrix" data-object-type="textbox">
+<div class="matrix-header">
+<div class="matrix-title">Skills Matrix</div>
+<div class="matrix-status">
+<div class="status-dot"></div>
+<span>Active</span>
+</div>
+</div>
+<div class="skills-grid">
+<div class="skill-item">
+<div class="skill-icon" style="background: rgba(59, 130, 246, 0.2); color: #3b82f6;">
+<i class="fas fa-pencil-alt"></i>
+</div>
+<div class="skill-content">
+<div class="skill-name">Define</div>
+<div class="skill-desc">Definire cerințe</div>
+</div>
+</div>
+<div class="skill-item">
+<div class="skill-icon" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">
+<i class="fas fa-ship"></i>
+</div>
+<div class="skill-content">
+<div class="skill-name">Ship</div>
+<div class="skill-desc">Livrare cod</div>
+</div>
+</div>
+<div class="skill-item">
+<div class="skill-icon" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">
+<i class="fas fa-check-circle"></i>
+</div>
+<div class="skill-content">
+<div class="skill-name">Validate</div>
+<div class="skill-desc">Validare QA</div>
+</div>
+</div>
+<div class="skill-item">
+<div class="skill-icon" style="background: rgba(139, 92, 246, 0.2); color: #8b5cf6;">
+<i class="fas fa-sync"></i>
+</div>
+<div class="skill-content">
+<div class="skill-name">Iterate</div>
+<div class="skill-desc">Iterare &amp; feedback</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="right-panel">
+<div class="governance-section" data-object-type="textbox">
+<div class="section-header">
+<div class="section-title">Guardrails Framework</div>
+<div class="matrix-status" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa;">
+<div class="status-dot" style="background: #60a5fa; box-shadow: 0 0 10px rgba(96, 165, 250, 0.5);"></div>
+<span>Protected</span>
+</div>
+</div>
+<div class="guardrails-grid">
+<div class="guardrail-item">
+<div class="guardrail-header">
+<div class="guardrail-icon" style="background: rgba(59, 130, 246, 0.2); color: #3b82f6;">
+<i class="fas fa-check-double"></i>
+</div>
+<div class="guardrail-title">Approval Gates</div>
+</div>
+<div class="guardrail-desc">Approval înainte de execuție pentru decizii critice</div>
+<div class="guardrail-status">
+<i class="fas fa-check-circle"></i>
+<span>Active</span>
+</div>
+</div>
+<div class="guardrail-item">
+<div class="guardrail-header">
+<div class="guardrail-icon" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;">
+<i class="fas fa-shield-alt"></i>
+</div>
+<div class="guardrail-title">Security Gate</div>
+</div>
+<div class="guardrail-desc">Security gate înainte de QA pentru compliance</div>
+<div class="guardrail-status">
+<i class="fas fa-check-circle"></i>
+<span>Active</span>
+</div>
+</div>
+<div class="guardrail-item">
+<div class="guardrail-header">
+<div class="guardrail-icon" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">
+<i class="fas fa-bug"></i>
+</div>
+<div class="guardrail-title">QA Validation</div>
+</div>
+<div class="guardrail-desc">Validare calitate înainte de merge</div>
+<div class="guardrail-status">
+<i class="fas fa-check-circle"></i>
+<span>Active</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bottom-section">
+<div class="approval-gates" data-object-type="textbox" style="position: relative; transform: translate(0px, -34.1625px);">
+<div class="gates-icon">
+<i class="fas fa-sitemap"></i>
+</div>
+<div class="gates-content">
+<div class="gates-title">Approval Flow</div>
+<div class="gates-desc">Human-in-the-loop în punctele critice</div>
+<div class="gates-flow">
+<div class="gate-step">
+<i class="fas fa-file-alt" style="color: #3b82f6; font-size: 11px;"></i>
+<span>Define</span>
+</div>
+<div class="gate-arrow">→</div>
+<div class="gate-step">
+<i class="fas fa-code" style="color: #10b981; font-size: 11px;"></i>
+<span>Build</span>
+</div>
+<div class="gate-arrow">→</div>
+<div class="gate-step">
+<i class="fas fa-check-circle" style="color: #f59e0b; font-size: 11px;"></i>
+<span>Review</span>
+</div>
+<div class="gate-arrow">→</div>
+<div class="gate-step">
+<i class="fas fa-shield-alt" style="color: #ef4444; font-size: 11px;"></i>
+<span>Approve</span>
+</div>
+</div>
+</div>
+</div>
+<div class="security-gates" data-object-type="textbox" style="position: relative; transform: translate(0px, -34.1625px);">
+<div class="security-icon">
+<i class="fas fa-lock"></i>
+</div>
+<div class="security-content">
+<div class="security-title">Security First</div>
+<div class="security-desc">Policy-driven validation</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</body></html>
